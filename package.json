@@ -1,0 +1,36 @@
+{
+  "name": "fastify-webhook",
+  "version": "0.1.0",
+  "description": "Fastify Plugin to serve webhooks with some default settings",
+  "main": "plugin.js",
+  "scripts": {
+    "example": "node example/example.js",
+    "lint": "standard",
+    "test:unit": "tap test/*.test.js test/*/*.test.js",
+    "test": "npm run lint && npm run test:unit"
+  },
+  "dependencies": {
+    "fastify-plugin": "^0.2.2"
+  },
+  "devDependencies": {
+    "fastify": "^0.43.0",
+    "request": "^2.85.0",
+    "standard": "^11.0.1",
+    "tap": "^11.1.2"
+  },
+  "homepage": "https://github.com/smartiniOnGitHub/fastify-webhook#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smartiniOnGitHub/fastify-webhook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smartiniOnGitHub/fastify-webhook/issues"
+  },
+  "keywords": [
+    "fastify",
+    "plugin",
+    "webhook"
+  ],
+  "author": "Sandro Martini <sandro.martini@gmail.com>",
+  "license": "Apache-2.0"
+}
