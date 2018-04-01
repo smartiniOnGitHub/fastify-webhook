@@ -12,12 +12,12 @@ const fastify = require('fastify')()
 // example without specifying options, returning a default webhook mapped to '/webhook' that only acknowledge the POST request
 fastify.register(require('fastify-webhook'))
 // or
+// example with custom webhook url and handler
+// fastify.register(require('fastify-webhook') {'url': '/custom-webhook', 'handler': myWebhookHandler})
+// or
 // TODO: future use ...
-// example with custom webhook handler
-// fastify.register(require('fastify-webhook') {'handler': myWebhookHandler})
-// TODO: future use ...
-// example with custom webhook URLs (one or more)
-// fastify.register(require('fastify-webhook') {'webhook1': webhookHandler1, 'webhook2': webhookHandler2})
+// example with multiple webhook mappings (URL and handler)
+// fastify.register(require('fastify-webhook') { "disableDefaultWebhook": true, "mappings": [{"url": "/custom-webhook1", "handler": "myWebhookHandler1"}, {"url": "/custom-webhook2", "handler": "myWebhookHandler2"}], "id": 1000000000 })
 
 fastify.listen(3000)
 // curl -X POST 127.0.0.1:3000/webhook -H 'Content-Type: application/json' -d '{"payload":"test"}' => returning a JSON dump of the given data, and no thrown error

@@ -19,30 +19,34 @@ const fp = require('fastify-plugin')
 
 function fastifyWebHook (fastify, options, next) {
   const opts = options || {}
+  const handlers = {
+    acknowledge: acknowledgeWebHookHandler,
+    echo: echoWebHookHandler,
+    _default: acknowledgeWebHookHandler
+  }
   const defaultUrl = opts.url || '/webhook'
-  const defaultHandler = opts.handler || acknowledgeWebHookHandler
+  const defaultHandler = opts.handler || handlers._default
+  const disableDefaultWebhook = opts.disableDefaultWebhook || false
 
   /*
-  // TODO: implement later ...
-  function echoRequest (req, reply) {
-  // TODO: implement ... wip
-    console.log('test log from dumpRequest ...') // TODO: temp ...
-  }
-
+  */
   function echoWebHookHandler (req, reply) {
     // return a json dump of given input data
-    // TODO: implement ... wip
-    echoRequest() // TODO: temp ...
+    // TODO: implement it, and maybe add in the response the same attributes like in the acknowledge handler ... wip
+    console.log('test log from echoWebHookHandler ...') // TODO: temp ...
     reply.type('application/json').send({ hello: 'world' }) // TODO: temp ...
   }
-   */
 
   function acknowledgeWebHookHandler (req, reply) {
     // return a simple acknowledge message
     reply.type('application/json').send({ statusCode: 200, result: 'success' })
   }
 
-  fastify.post(defaultUrl, defaultHandler)
+  // execute plugin code
+  if (!disableDefaultWebhook) {
+    fastify.post(defaultUrl, defaultHandler)
+  }
+
   next()
 }
 
