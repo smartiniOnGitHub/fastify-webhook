@@ -67,11 +67,9 @@ test('default webhook (but called via GET instead of POST) return a not found er
   })
 })
 
-// TODO: ensure the delimiter char (single quote) seen here is good enough (instead of the double quote, needed by json standard) ... ok, it's good because in responses they are rewritten and added if/where needed by json serializer
+// TODO: add a test with custom url and a custom handler (maybe a console logger); as input data provide: "{'url': '/custom-webhook', 'handler': myWebhookHandler}" and implement accordingly ... wip
 
-// TODO: add tests on content (in the response) here, when passing some argument in the call ...
-
-// TODO: add a test with custom url and a custom handler (maybe a console logger) ...
+// TODO: add tests on content (in the response) here, when passing some argument in the call, like 'token' ...
 
 // TODO: add at least 1 test per any other plugin handler ...
 
