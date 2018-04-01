@@ -16,31 +16,37 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-// const path = require('path')
-// const scriptRelativeFolder = path.join(__dirname, path.sep)
 
-// TODO: fix function arguments, and check if move inside the plugin ... wip
-
-function dumpRequest (req, reply) {
-// TODO: implement ... wip
-  console.log('test log from dumpRequest ...') // TODO: temp ...
-}
-
-function defaultWebHookHandler (req, reply) {
-// TODO: implement ... wip
-  dumpRequest() // TODO: temp ...
-  reply.type('application/json').send({ hello: 'world' }) // TODO: temp ...
-}
-
-function defaultWebHookPlugin (fastify, options, next) {
+function fastifyWebHook (fastify, options, next) {
   const opts = options || {}
   const defaultUrl = opts.url || '/webhook'
+  const defaultHandler = opts.handler || acknowledgeWebHookHandler
 
-  fastify.post(defaultUrl, defaultWebHookHandler)
+  /*
+  // TODO: implement later ...
+  function echoRequest (req, reply) {
+  // TODO: implement ... wip
+    console.log('test log from dumpRequest ...') // TODO: temp ...
+  }
+
+  function echoWebHookHandler (req, reply) {
+    // return a json dump of given input data
+    // TODO: implement ... wip
+    echoRequest() // TODO: temp ...
+    reply.type('application/json').send({ hello: 'world' }) // TODO: temp ...
+  }
+   */
+
+  function acknowledgeWebHookHandler (req, reply) {
+    // return a simple acknowledge message
+    reply.type('application/json').send({ statusCode: 200, result: 'success' })
+  }
+
+  fastify.post(defaultUrl, defaultHandler)
   next()
 }
 
-module.exports = fp(defaultWebHookPlugin, {
+module.exports = fp(fastifyWebHook, {
   fastify: '>=0.43.0',
   name: 'fastify-webhook'
 })

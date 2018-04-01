@@ -20,7 +20,7 @@ const request = require('request')
 const Fastify = require('fastify')
 
 test('default webhook does not return an error, but a good response (200) and some content', (t) => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
   fastify.register(require('../')) // configure this plugin with its default options
 
@@ -36,7 +36,31 @@ test('default webhook does not return an error, but a good response (200) and so
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      // TODO: add tests on empty content (in the response) here ...
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('default webhook (but called via GET instead of POST) return a not found error (404) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.register(require('../')) // configure this plugin with its default options
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'GET',
+      uri: `http://localhost:${port}/webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not found' })
 
       fastify.close()
     })
@@ -44,5 +68,3 @@ test('default webhook does not return an error, but a good response (200) and so
 })
 
 // TODO: add tests on content (in the response) here, when passing some argument in the call ...
-
-// TODO: add test to check error code when returning a not-existing webhook ...
