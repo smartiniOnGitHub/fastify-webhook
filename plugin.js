@@ -28,13 +28,11 @@ function fastifyWebHook (fastify, options, next) {
   const defaultHandler = opts.handler || handlers._default
   const disableDefaultWebhook = opts.disableDefaultWebhook || false
 
-  /*
-  */
   function echoWebHookHandler (req, reply) {
     // return a json dump of given input data
     // TODO: implement it, and maybe add in the response the same attributes like in the acknowledge handler ... wip
-    console.log('test log from echoWebHookHandler ...') // TODO: temp ...
-    reply.type('application/json').send({ hello: 'world' }) // TODO: temp ...
+    console.log('test log from echoWebHookHandler: request body = ' + req.body) // TODO: temp ...
+    reply.type('application/json').send(req.body) // TODO: temp ...
   }
 
   function acknowledgeWebHookHandler (req, reply) {

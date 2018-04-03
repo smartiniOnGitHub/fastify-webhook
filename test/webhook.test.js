@@ -67,7 +67,39 @@ test('default webhook (but called via GET instead of POST) return a not found er
   })
 })
 
-// TODO: add a test with custom url and a custom handler (maybe a console logger); as input data provide: "{'url': '/custom-webhook', 'handler': myWebhookHandler}" and implement accordingly ... wip
+function consoleLoggerHandler (req, reply) {
+  console.log(`Request body: ${req.body}`)
+  // reply.type('application/json').send(req.body)
+  reply.type('application/json').send({ statusCode: 200, result: 'success' })
+}
+
+test('custom options for webhook does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.register(require('../'), {
+    'url': '/custom-webhook',
+    'handler': consoleLoggerHandler // (msg) => console.log(msg) // use an arrow function just for simplicity // ok but not so useful ...
+  }) // configure this plugin with some custom options
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`
+      // TODO: add some json payload, and expect it as result ... wip
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
 
 // TODO: add tests on content (in the response) here, when passing some argument in the call, like 'token' ...
 
