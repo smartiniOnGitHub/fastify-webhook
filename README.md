@@ -34,7 +34,8 @@ By default the plugin map a default handler on the URI `/webhook` to be called v
 
 The plugin exposes some handlers, for common base operations:
 - `acknowledgeWebHookHandler` (default handler) that simply acknowledge the request, and reply with a simple json response
-- `echoWebHookHandler` it dumps the given input data, in the json response
+- `echoWebHookHandler` it dumps the given input data in the (json) response
+- `loggerWebHookHandler` it dumps some info on the request using Fastify logger
 but of course for a real world usage you need to specify your own handler function, with arguments '(req, reply)'.
 
 

@@ -69,7 +69,7 @@ test('default webhook (but called via GET instead of POST) return a not found er
 
 function consoleLoggerHandler (req, reply) {
   console.log(`Request MIME Type: "${req.headers['content-type']}"`)
-  console.log(`Request ID: "${request.id}"`)
+  console.log(`Request ID: "${req.id}"`)
   console.log(`Request body: "${req.body}"`)
   // reply.type('application/json').send(req.body)
   reply.type('application/json').send({ statusCode: 200, result: 'success' })
@@ -119,21 +119,6 @@ test('custom options for webhook (and optional input content type and body) does
     request({
       method: 'POST',
       uri: `http://localhost:${port}/custom-webhook`,
-      // TODO: add some json payload, and expect it as result ... ok but not with this handler
-      /*
-// TODO: remove because not supported by Fastify without a specific plugin like 'fastify-multipart' ...
-      multipart: [
-        {
-          'content-type': 'application/json',
-          body: JSON.stringify(sampleData)
-        }
-      ]
-       */
-      /*
- // TODO: same as the previous commented block, but in a shorter way ...
-      json: true,
-      body: JSON.stringify(sampleData)
-       */
       // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
       headers: {
         'content-type': 'application/json'
@@ -144,11 +129,199 @@ test('custom options for webhook (and optional input content type and body) does
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-      // TODO: add checks on response type and content ... ok but not with this handler
 
       fastify.close()
     })
   })
 })
 
-// TODO: add tests (using plugin echoHandler) on content (in the response) here, when passing some argument in the call, like 'token' ... wip
+test('custom options for webhook (using plugin loggerWebHookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.loggerWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin loggerWebHookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.loggerWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = '{"payload":"test"}'
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`,
+      // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echoWebHookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.echoWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echoWebHookHandler with empty mime type) to ensure it will reply with an error (415) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.echoWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = '{"payload":"test"}'
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': '' // force an empty mime type
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), {'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: '})
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echoWebHookHandler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.echoWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = '{"payload":"test"}'
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': 'application/unknown' // force a mime type not handled directly by Fastify
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), {'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown'})
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echoWebHookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookPlugin.echoWebHookHandler
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = '{"payload":"test"}'
+
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), sampleData)
+      // TODO: fix last failing test ... wip
+      console.log(`Response body: "${body}"`) // TODO: temp ...
+
+      fastify.close()
+    })
+  })
+})
