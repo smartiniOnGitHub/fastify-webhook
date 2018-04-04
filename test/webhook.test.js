@@ -68,17 +68,19 @@ test('default webhook (but called via GET instead of POST) return a not found er
 })
 
 function consoleLoggerHandler (req, reply) {
-  console.log(`Request body: ${req.body}`)
+  console.log(`Request MIME Type: "${req.headers['content-type']}"`)
+  console.log(`Request ID: "${request.id}"`)
+  console.log(`Request body: "${req.body}"`)
   // reply.type('application/json').send(req.body)
   reply.type('application/json').send({ statusCode: 200, result: 'success' })
 }
 
-test('custom options for webhook does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   fastify.register(require('../'), {
     'url': '/custom-webhook',
-    'handler': consoleLoggerHandler // (msg) => console.log(msg) // use an arrow function just for simplicity // ok but not so useful ...
+    'handler': consoleLoggerHandler
   }) // configure this plugin with some custom options
 
   fastify.listen(0, (err) => {
@@ -89,7 +91,6 @@ test('custom options for webhook does not return an error, but a good response (
     request({
       method: 'POST',
       uri: `http://localhost:${port}/custom-webhook`
-      // TODO: add some json payload, and expect it as result ... wip
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -101,8 +102,53 @@ test('custom options for webhook does not return an error, but a good response (
   })
 })
 
-// TODO: add tests on content (in the response) here, when passing some argument in the call, like 'token' ...
+test('custom options for webhook (and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.register(require('../'), {
+    'url': '/custom-webhook',
+    'handler': consoleLoggerHandler
+  })
 
-// TODO: add at least 1 test per any other plugin handler ...
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = '{"payload":"test"}'
 
-// TODO: add test with a custom handler ...
+    request({
+      method: 'POST',
+      uri: `http://localhost:${port}/custom-webhook`,
+      // TODO: add some json payload, and expect it as result ... ok but not with this handler
+      /*
+// TODO: remove because not supported by Fastify without a specific plugin like 'fastify-multipart' ...
+      multipart: [
+        {
+          'content-type': 'application/json',
+          body: JSON.stringify(sampleData)
+        }
+      ]
+       */
+      /*
+ // TODO: same as the previous commented block, but in a shorter way ...
+      json: true,
+      body: JSON.stringify(sampleData)
+       */
+      // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+      // TODO: add checks on response type and content ... ok but not with this handler
+
+      fastify.close()
+    })
+  })
+})
+
+// TODO: add tests (using plugin echoHandler) on content (in the response) here, when passing some argument in the call, like 'token' ... wip
