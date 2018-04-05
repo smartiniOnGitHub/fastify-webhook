@@ -12,8 +12,8 @@ const fastify = require('fastify')()
 // example without specifying options, returning a default webhook mapped to '/webhook' that only acknowledge the POST request
 fastify.register(require('fastify-webhook'))
 // or
-// example with custom webhook url and handler
-// fastify.register(require('fastify-webhook'), {'url': '/custom-webhook', 'handler': myWebhookHandler})
+// example with custom webhook url and handler, and secret key
+// fastify.register(require('fastify-webhook'), {'url': '/custom-webhook', 'handler': myWebhookHandler, 'secretKey': 'secret key'})
 // or
 // TODO: future use ...
 // example with multiple webhook mappings (URL and handler)
@@ -33,9 +33,9 @@ Fastify 0.43.0 or later.
 By default the plugin map a default handler on the URI `/webhook` to be called via POST.
 
 The plugin exposes some handlers, for common base operations:
-- `acknowledgeWebHookHandler` (default handler) that simply acknowledge the request, and reply with a simple json response
-- `echoWebHookHandler` it dumps the given input data in the (json) response
-- `loggerWebHookHandler` it dumps some info on the request using Fastify logger
+- `acknowledgeWebhookHandler` (default handler) that simply acknowledge the request, and reply with a simple json response
+- `echoWebhookHandler` it dumps the given input data in the (json) response
+- `loggerWebhookHandler` it dumps some info on the request using Fastify logger
 but of course for a real world usage you need to specify your own handler function, with arguments '(req, reply)'.
 
 

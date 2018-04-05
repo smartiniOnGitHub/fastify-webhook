@@ -20,54 +20,68 @@ const fp = require('fastify-plugin')
 function fastifyWebHook (fastify, options, next) {
   const opts = options || {}
   const handlers = {
-    acknowledge: acknowledgeWebHookHandler,
-    echo: echoWebHookHandler,
-    logger: loggerWebHookHandler,
-    _default: acknowledgeWebHookHandler
+    acknowledge: acknowledgeWebhookHandler,
+    echo: echoWebhookHandler,
+    logger: loggerWebhookHandler
   }
-  const defaultUrl = opts.url || '/webhook'
-  const defaultHandler = opts.handler || handlers._default
+  const webhookUrl = opts.url || '/webhook'
+  const webhookHandler = opts.handler || handlers.acknowledge
   const disableDefaultWebhook = opts.disableDefaultWebhook || false
+  const webhookSecretKey = opts.secretKey || null
 
-  function _defaultSuccessWebHookReply (reply) {
+  if (typeof webhookUrl !== 'string') {
+    throw new TypeError(`The given url must be a string, instead got a '${typeof webhookUrl}'`)
+  }
+  if (typeof webhookHandler !== 'function') {
+    throw new TypeError(`The given webhook must be a function, instead got a '${typeof webhookHandler}'`)
+  }
+  if (webhookSecretKey !== null && typeof webhookSecretKey !== 'string') {
+    throw new TypeError(`The given secretKey must be a string, instead got a '${typeof webhookSecretKey}'`)
+  }
+
+  function _defaultSuccessWebhookReply (reply) {
     // return a simple default message for successful processing
     reply.type('application/json').send({ statusCode: 200, result: 'success' })
   }
 
-  function _failureWebHookReply (reply, message) {
+  function _failureWebhookReply (reply, message) {
     // return a simple error when processing the request
     reply.type('application/json').send(new Error(message))
   }
 
-  function echoWebHookHandler (req, reply) {
-    // return a json dump of given input data
+  function _isMimeTypeJSON (req) {
+    // tell the MIME Type of the inpout data, if it's json
     const reqMimeType = req.getHeader('content-type')
-    if (!reqMimeType || !reqMimeType === 'application/json') {
-      // console.log('test log from echoWebHookHandler: request mime type missing or wrong = ' + reqMimeType) // TODO: temp ...
-      // reply.code(500).type('application/json').send({ statusCode: 500, result: 'failure', message: 'Missing or wrong input MIME Type' })
-      _failureWebHookReply(reply, 'Missing or wrong input MIME Type')
+    if (!reqMimeType || reqMimeType !== 'application/json') {
+      return false
+    }
+    return true
+  }
+
+  function echoWebhookHandler (req, reply) {
+    // return a json dump of given input data
+    if (!_isMimeTypeJSON(req)) {
+      _failureWebhookReply(reply, `Missing or wrong input MIME Type: "${req.getHeader('content-type')}"`)
       return
     }
-    // console.log('test log from echoWebHookHandler: request body = ' + req.body) // TODO: temp ...
+    // console.log('test log from echoWebhookHandler: request body = ' + req.body) // TODO: temp ...
     req.log(`Request: MIME Type: "${req.getHeader('content-type')}", ID: "${req.id}", body: "${req.body}"`) // TODO: temp ...
-    // TODO: add in the response the same attributes like in the acknowledge handler ... maybe later
     reply.type('application/json').send(req.body)
   }
 
-  function loggerWebHookHandler (req, reply) {
-    // req.log(`Request: MIME Type: "${req.headers['content-type']}", ID: "${req.id}", body: "${req.body}"`)
+  function loggerWebhookHandler (req, reply) {
     req.log(`Request: MIME Type: "${req.getHeader('content-type')}", ID: "${req.id}", body: "${req.body}"`)
-    _defaultSuccessWebHookReply(reply)
+    _defaultSuccessWebhookReply(reply)
   }
 
-  function acknowledgeWebHookHandler (req, reply) {
+  function acknowledgeWebhookHandler (req, reply) {
     // return a simple acknowledge message
-    _defaultSuccessWebHookReply(reply)
+    _defaultSuccessWebhookReply(reply)
   }
 
   // execute plugin code
   if (!disableDefaultWebhook) {
-    fastify.post(defaultUrl, defaultHandler)
+    fastify.post(webhookUrl, webhookHandler)
   }
 
   next()

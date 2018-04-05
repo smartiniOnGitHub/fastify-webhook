@@ -135,13 +135,13 @@ test('custom options for webhook (and optional input content type and body) does
   })
 })
 
-test('custom options for webhook (using plugin loggerWebHookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin loggerWebhookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.loggerWebHookHandler
+    'handler': webhookPlugin.loggerWebhookHandler
   })
 
   fastify.listen(0, (err) => {
@@ -163,13 +163,13 @@ test('custom options for webhook (using plugin loggerWebHookHandler and empty bo
   })
 })
 
-test('custom options for webhook (using plugin loggerWebHookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin loggerWebhookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.loggerWebHookHandler
+    'handler': webhookPlugin.loggerWebhookHandler
   })
 
   fastify.listen(0, (err) => {
@@ -197,13 +197,13 @@ test('custom options for webhook (using plugin loggerWebHookHandler and optional
   })
 })
 
-test('custom options for webhook (using plugin echoWebHookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin echoWebhookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebHookHandler
+    'handler': webhookPlugin.echoWebhookHandler
   })
 
   fastify.listen(0, (err) => {
@@ -225,13 +225,13 @@ test('custom options for webhook (using plugin echoWebHookHandler and empty body
   })
 })
 
-test('custom options for webhook (using plugin echoWebHookHandler with empty mime type) to ensure it will reply with an error (415) and some content', (t) => {
+test('custom options for webhook (using plugin echoWebhookHandler with empty mime type) to ensure it will reply with an error (415) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebHookHandler
+    'handler': webhookPlugin.echoWebhookHandler
   })
 
   fastify.listen(0, (err) => {
@@ -258,13 +258,13 @@ test('custom options for webhook (using plugin echoWebHookHandler with empty mim
   })
 })
 
-test('custom options for webhook (using plugin echoWebHookHandler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and some content', (t) => {
+test('custom options for webhook (using plugin echoWebhookHandler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebHookHandler
+    'handler': webhookPlugin.echoWebhookHandler
   })
 
   fastify.listen(0, (err) => {
@@ -291,13 +291,13 @@ test('custom options for webhook (using plugin echoWebHookHandler with a wrong m
   })
 })
 
-test('custom options for webhook (using plugin echoWebHookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin echoWebhookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebHookHandler
+    'handler': webhookPlugin.echoWebhookHandler
   })
 
   fastify.listen(0, (err) => {
