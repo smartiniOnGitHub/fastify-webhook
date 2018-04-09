@@ -100,10 +100,7 @@ test('default webhook (and optional input content type and body) does not return
 })
 
 function consoleLoggerHandler (req, reply) {
-  console.log(`Request MIME Type: "${req.headers['content-type']}"`)
-  // console.log(`Request MIME Type: "${req.getHeader('content-type')}"`)
-  console.log(`Request ID: "${req.id}"`)
-  console.log(`Request body: "${req.body}"`)
+  console.log(`Request: MIME Type: "${req.headers['content-type']}", ID: "${req.id}", body: "${req.body}"`)
   // reply.type('application/json').send(req.body)
   reply.type('application/json').send({ statusCode: 200, result: 'success' })
 }
@@ -170,14 +167,15 @@ test('custom options for webhook and local handler (and optional input content t
   })
 })
 
-/*
-test('custom options for webhook (using plugin loggerWebhookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin logger handler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+  // note that this tests is successful even when given an empty body because input content won't be parsed but only logged
   t.plan(5)
   const fastify = Fastify()
-  const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../') // get a reference to the plugin
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.loggerWebhookHandler
+    'handler': webhookHandlers.logger
   })
 
   fastify.listen(0, (err) => {
@@ -200,13 +198,14 @@ test('custom options for webhook (using plugin loggerWebhookHandler and empty bo
   })
 })
 
-test('custom options for webhook (using plugin loggerWebhookHandler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin logger handler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookPlugin = require('../') // get a reference to plugin, to be able to use its handlers
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../') // get a reference to the plugin
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.loggerWebhookHandler
+    'handler': webhookHandlers.logger
   })
 
   fastify.listen(0, (err) => {
@@ -235,13 +234,15 @@ test('custom options for webhook (using plugin loggerWebhookHandler and optional
   })
 })
 
-test('custom options for webhook (using plugin echoWebhookHandler and empty body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler with no mime type and empty body) to ensure it will reply with an error (500) and some content', (t) => {
+  // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebhookHandler
+    'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err) => {
@@ -255,26 +256,24 @@ test('custom options for webhook (using plugin echoWebhookHandler and empty body
       uri: `http://localhost:${port}/custom-webhook`
     }, (err, response, body) => {
       t.error(err)
-      // t.strictEqual(response.statusCode, 200)
-      // t.strictEqual(response.headers['content-type'], 'application/json')
-      // t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-      // TODO: update the test with right response for empty body here (probably) ...
-      t.strictEqual(response.statusCode, 400)
+      t.strictEqual(response.statusCode, 500)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
+      t.deepEqual(JSON.parse(body), { statusCode: 500, error: 'Internal Server Error', message: 'Missing or wrong input MIME Type: "undefined"' })
 
       fastify.close()
     })
   })
 })
 
-test('custom options for webhook (using plugin echoWebhookHandler with empty mime type) to ensure it will reply with an error (415) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler with given but empty mime type and some body content) to ensure it will reply with an error (415) and some content', (t) => {
+  // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    'handler': webhookPlugin.echoWebhookHandler
+    'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err) => {
@@ -303,8 +302,10 @@ test('custom options for webhook (using plugin echoWebhookHandler with empty mim
 })
 
 test('custom options for webhook (using plugin echo handler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and some content', (t) => {
+  // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -335,32 +336,52 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
     })
   })
 })
- */
 
-test('custom options for webhook (using plugin echo handler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler and input content type but no body) to ensure it will reply with an error (400) and its description', (t) => {
+  // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
   const webhookHandlers = require('../handlers.js') // get plugin handlers
-  // fastify.register(webhookHandlers, { }) // configure plugin handlers
-  // console.log(`webhookHandlers: "${webhookHandlers()}"`) // TODO: temp ...
-  // console.log(`webhookHandlers: "${webhookHandlers}"`) // TODO: temp ...
-  // console.log(`webhookHandlers: "${webhookHandlers({}, {})}"`) // TODO: temp ...
-  // console.log(`webhookHandler: "${webhookHandlers.webhookEchoHandler}"`) // TODO: temp ...
-  // fastify.decorate('webhookHandlers', require('../handlers')) // get, configure and add plugin webhook handlers to fastify instance
-  // console.log(`webhookHandlers.handlers: "${fastify.webhookHandlers().handlers}"`) // TODO: temp ...
-  // const fastifyWebhookHandlers = fastify.webhookHandlers()
-  // const fastifyWebhookHandlers = webhookHandlers().handlers
-  // console.log(`fastifyWebhookHandlers: "${fastifyWebhookHandlers}"`) // TODO: temp ...
-  // console.log(`fastifyWebhookHandlers.handlers: "${fastifyWebhookHandlers.handlers}"`) // TODO: temp ...
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
-    // 'handler': webhookPlugin.echoWebhookHandler
     'handler': webhookHandlers.echo
   })
 
-  /*
-  // TODO: uncomment later ...
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'POST',
+      timeout: 2000,
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echo handler and input content type and body) does not return an error, but a good response (200) and some content', (t) => {
+  // note that this tests is successful because echo handler wants json as input content type, and a valid (non empty) json content
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookHandlers.echo
+  })
+
   fastify.listen(0, (err) => {
     fastify.server.unref()
     t.error(err)
@@ -382,39 +403,6 @@ test('custom options for webhook (using plugin echo handler and optional input c
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.deepEqual(JSON.parse(body), sampleData)
-      // TODO: fix last failing test ... wip
-      console.log(`Response body: "${body}"`) // TODO: temp ...
-
-      fastify.close()
-    })
-     */
-  // TODO: temp ...
-  fastify.listen(0, (err) => {
-    fastify.server.unref()
-    t.error(err)
-    const port = fastify.server.address().port
-    // const sampleData = {'payload': 'test'}
-    // // const sampleData = '{"payload":"test"}'
-
-    request({
-      method: 'POST',
-      timeout: 2000,
-      uri: `http://localhost:${port}/custom-webhook`,
-      headers: {
-        'content-type': 'application/json' // force the right mime type to send data here
-      }
-      // },
-      // body: JSON.stringify(sampleData)
-      // // body: sampleData  // good if already in JSON format ...
-    }, (err, response, body) => {
-      t.error(err)
-      // t.strictEqual(response.statusCode, 200)
-      // t.strictEqual(response.headers['content-type'], 'application/json')
-      // t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-      // TODO: update the test with right response for empty body here (probably) ...
-      t.strictEqual(response.statusCode, 400)
-      t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
 
       fastify.close()
     })
