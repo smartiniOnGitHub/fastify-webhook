@@ -17,15 +17,22 @@
 
 const fp = require('fastify-plugin')
 
+const webhookHandlers = require('./handlers.js') // get plugin handlers
+
 function fastifyWebHook (fastify, options, next) {
   const opts = options || {}
+  /*
+  // TODO: moved in handlers.js, so remove from here ... wip
   const handlers = {
     acknowledge: acknowledgeWebhookHandler,
     echo: echoWebhookHandler,
     logger: loggerWebhookHandler
   }
+   */
   const webhookUrl = opts.url || '/webhook'
-  const webhookHandler = opts.handler || handlers.acknowledge
+  // const webhookHandler = opts.handler || handlers.acknowledge
+  const webhookHandler = opts.handler || webhookHandlers.acknowledge
+  console.log(`webhookHandler: "${webhookHandler}"`)
   const disableDefaultWebhook = opts.disableDefaultWebhook || false
   const webhookSecretKey = opts.secretKey || null
 
@@ -39,6 +46,8 @@ function fastifyWebHook (fastify, options, next) {
     throw new TypeError(`The given secretKey must be a string, instead got a '${typeof webhookSecretKey}'`)
   }
 
+  /*
+  // TODO: moved in handlers.js, so remove from here ... wip
   function _defaultSuccessWebhookReply (reply) {
     // return a simple default message for successful processing
     reply.type('application/json').send({ statusCode: 200, result: 'success' })
@@ -78,6 +87,7 @@ function fastifyWebHook (fastify, options, next) {
     // return a simple acknowledge message
     _defaultSuccessWebhookReply(reply)
   }
+ */
 
   // execute plugin code
   if (!disableDefaultWebhook) {
