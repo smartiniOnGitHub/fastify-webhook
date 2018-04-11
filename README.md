@@ -14,10 +14,17 @@ fastify.register(require('fastify-webhook'))
 // or
 // example with custom webhook url and handler, and secret key
 // fastify.register(require('fastify-webhook'), {'url': '/custom-webhook', 'handler': myWebhookHandler, 'secretKey': 'secret key'})
+//
+// note that to use one of handlers bundled with the plugin, you need to get a reference to the plugin script 'handlers.js', and then as handler pass a reference to desired function, like:
+// const webhookHandlers = require('fastify-webhook/handlers.js') // get plugin handlers (optional)
+// const webhookPlugin = require('fastify-webhook')
+// fastify.register(webhookPlugin, { 'url': '/custom-webhook', 'handler': webhookHandlers.echo, 'secretKey': 'secret key'})
+//
 // or
 // TODO: future use ...
 // example with multiple webhook mappings (URL and handler)
 // fastify.register(require('fastify-webhook'), { "disableDefaultWebhook": true, "mappings": [{"url": "/custom-webhook1", "handler": "myWebhookHandler1"}, {"url": "/custom-webhook2", "handler": "myWebhookHandler2"}], "id": 1000000000 })
+//
 
 fastify.listen(3000)
 // curl -X POST 127.0.0.1:3000/webhook -H 'Content-Type: application/json' -d '{"payload":"test"}' => returning a JSON dump of the given data, and no thrown error
