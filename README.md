@@ -37,15 +37,20 @@ Fastify 0.43.0 or later.
 
 ## Note
 
-By default the plugin map a default handler on the URI `/webhook` to be called via POST.
+By default the plugin map a default handler on the URI `/webhook` to be called via POST, otherwise it's possible to change via the setting 'url' in plugin options.
 
 The plugin exposes some handlers, for common base operations (and webhook debug help).
-To use one of them , before registering the plugin, you need to get a reference from its `handlers.js` file.
+To use one of them, before registering the plugin, you need to get a reference from its `handlers.js` file;
+then you can configure the desired one in the setting 'handler' in plugin options.
 They are:
 - `acknowledge` (default handler) that simply acknowledge the request, and reply with a simple json response
 - `echo` it dumps the given input data in the (json) response
 - `logger` it dumps some info on the request using Fastify logger
 but of course for a real world usage you need to specify your own handler function, with arguments '(req, reply)'.
+
+Other plugin options:
+- 'disableDefaultWebhook' (default false) to disable the registration of the route for the webhook
+- 'secretKey' (default null) to specify a secret key that callers of the webhook must provide, or calls will reply with an error
 
 
 ## License
