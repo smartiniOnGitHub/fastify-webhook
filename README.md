@@ -30,6 +30,9 @@ fastify.listen(3000)
 // curl -X POST 127.0.0.1:3000/webhook -H 'Content-Type: application/json' -d '{"payload":"test"}' => returning a JSON dump of the given data, and no thrown error
 ```
 
+In the [example](./example/) folder there are some simple server scripts that uses the plugin (inline but it's the same using it from npm registry).
+
+
 ## Requirements
 
 Fastify 0.43.0 or later.

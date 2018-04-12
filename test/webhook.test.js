@@ -449,15 +449,14 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
-    'secretKey': 'a Wrong Key'
-    // 'secretKey': 'my Secret Key'
+    'secretKey': 'my Secret Key'
   })
 
   fastify.listen(0, (err) => {
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
+    const sampleData = {'payload': 'test', 'secretKey': 'a Wrong Key'}
 
     request({
       method: 'POST',
