@@ -50,7 +50,7 @@ but of course for a real world usage you need to specify your own handler functi
 
 Other plugin options:
 - 'disableDefaultWebhook' (default false) to disable the registration of the route for the webhook
-- 'secretKey' (default null) to specify a secret key that callers of the webhook must provide, or calls will reply with an error
+- 'secretKey' (default null) to specify a string as secret key that callers of the webhook must provide, or webhook will reply with an error
 
 
 ## License

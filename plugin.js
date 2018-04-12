@@ -38,7 +38,33 @@ function fastifyWebHook (fastify, options, next) {
 
   // execute plugin code
   if (!disableDefaultWebhook) {
-    fastify.post(webhookUrl, webhookHandler)
+    // fastify.post(webhookUrl, webhookHandler)
+    fastify.route({
+      method: 'POST',
+      url: webhookUrl,
+      // schema: { ... },
+      beforeHandler: [
+        function checkSecretKey (req, reply, done) {
+          // TODO: remove commented code (just after the commit) ... ok
+          // console.log(`checkSecretKey: MIME Type: "${req.headers['content-type']}", ID: "${req.id}", body: "${req.body}"`)
+          if (webhookSecretKey) {
+            console.log(`checkSecretKey: webhookSecretKey: "${webhookSecretKey}"`) // TODO: temp ...
+            if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
+              reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
+            }
+          }
+          done()
+          /*
+          // TODO: enable later ...
+        },
+        function checkToken (request, reply, done) {
+          // your code
+          done()
+          */
+        }
+      ],
+      handler: webhookHandler
+    })
   }
 
   next()

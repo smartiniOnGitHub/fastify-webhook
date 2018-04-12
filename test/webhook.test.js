@@ -44,7 +44,7 @@ test('default webhook (and empty body) does not return an error, but a good resp
   })
 })
 
-test('default webhook (and empty body) but called via GET instead of POST, return a not found error (404) and some content', (t) => {
+test('default webhook (and empty body) but called via GET instead of POST, return a not found error (404) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
   fastify.register(require('../')) // configure this plugin with its default options
@@ -234,7 +234,7 @@ test('custom options for webhook (using plugin logger handler and optional input
   })
 })
 
-test('custom options for webhook (using plugin echo handler with no mime type and empty body) to ensure it will reply with an error (500) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler with no mime type and empty body) to ensure it will reply with an error (500) and its description', (t) => {
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
@@ -265,7 +265,7 @@ test('custom options for webhook (using plugin echo handler with no mime type an
   })
 })
 
-test('custom options for webhook (using plugin echo handler with given but empty mime type and some body content) to ensure it will reply with an error (415) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler with given but empty mime type and some body content) to ensure it will reply with an error (415) and its description', (t) => {
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
@@ -301,7 +301,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
   })
 })
 
-test('custom options for webhook (using plugin echo handler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and some content', (t) => {
+test('custom options for webhook (using plugin echo handler with a wrong mime type, not supported directly by Fastify) to ensure it will reply with an error (415) and its description', (t) => {
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
@@ -408,3 +408,110 @@ test('custom options for webhook (using plugin echo handler and input content ty
     })
   })
 })
+
+test('custom options for webhook (using plugin acknowledge handler and no input content type and no body content) so no secret key, must return a Forbidden error (403) and its description', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookHandlers.acknowledge,
+    'secretKey': 'my Secret Key'
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+
+    request({
+      method: 'POST',
+      timeout: 2000,
+      uri: `http://localhost:${port}/custom-webhook`
+      // no secret key provided (in the body content)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 403)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin acknowledge handler and input content type and body content) and a wrong secret key, must return a Forbidden error (403) and its description', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookHandlers.acknowledge,
+    'secretKey': 'a Wrong Key'
+    // 'secretKey': 'my Secret Key'
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
+
+    request({
+      method: 'POST',
+      timeout: 2000,
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 403)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin acknowledge handler and input content type and body content) and a secret key, must return a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook',
+    'handler': webhookHandlers.acknowledge,
+    'secretKey': 'my Secret Key'
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
+
+    request({
+      method: 'POST',
+      timeout: 2000,
+      uri: `http://localhost:${port}/custom-webhook`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+
+      fastify.close()
+    })
+  })
+})
+
+// TODO: add a test even with good and wrong secretKey, but with echo handler, and check for the response ... wip
