@@ -25,15 +25,28 @@ function fastifyWebHook (fastify, options, next) {
   const webhookHandler = opts.handler || webhookHandlers.acknowledge
   const disableDefaultWebhook = opts.disableDefaultWebhook || false
   const webhookSecretKey = opts.secretKey || null
+  const webhookBeforeHandlers = opts.beforeHandlers || [
+    function checkSecretKey (req, reply, done) {
+      if (webhookSecretKey) {
+        if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
+          reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
+        }
+      }
+      done()
+    }
+  ]
 
   if (typeof webhookUrl !== 'string') {
-    throw new TypeError(`The given url must be a string, instead got a '${typeof webhookUrl}'`)
+    throw new TypeError(`The option url must be a string, instead got a '${typeof webhookUrl}'`)
   }
   if (typeof webhookHandler !== 'function') {
-    throw new TypeError(`The given webhook must be a function, instead got a '${typeof webhookHandler}'`)
+    throw new TypeError(`The option webhook must be a function, instead got a '${typeof webhookHandler}'`)
   }
   if (webhookSecretKey !== null && typeof webhookSecretKey !== 'string') {
-    throw new TypeError(`The given secretKey must be a string, instead got a '${typeof webhookSecretKey}'`)
+    throw new TypeError(`The option secretKey must be a string, instead got a '${typeof webhookSecretKey}'`)
+  }
+  if (webhookBeforeHandlers !== null && !Array.isArray(webhookBeforeHandlers)) {
+    throw new TypeError(`The option beforeHandlers must be an array (of functions), instead got a '${typeof webhookBeforeHandlers}'`)
   }
 
   // execute plugin code
@@ -41,16 +54,7 @@ function fastifyWebHook (fastify, options, next) {
     fastify.route({
       method: 'POST',
       url: webhookUrl,
-      beforeHandler: [
-        function checkSecretKey (req, reply, done) {
-          if (webhookSecretKey) {
-            if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
-              reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
-            }
-          }
-          done()
-        }
-      ],
+      beforeHandler: webhookBeforeHandlers,
       handler: webhookHandler
     })
   }
