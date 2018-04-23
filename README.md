@@ -27,7 +27,12 @@ fastify.register(require('fastify-webhook'))
 //
 
 fastify.listen(3000)
-// curl -X POST 127.0.0.1:3000/webhook -H 'Content-Type: application/json' -d '{"payload":"test"}' => returning a JSON dump of the given data, and no thrown error
+
+// To test, for example (in another terminal session) do:
+// curl http://127.0.0.1:8000/webhook -X POST -H 'Content-Type: application/json' -d '{"payload":"test"}' => returning a JSON dump of the given data, and no thrown error
+// in Windows you need to escape double quote char in the given json body, so do:
+// curl http://127.0.0.1:8000/webhook -X POST -H "Content-Type: application/json" -d "{\"payload\":\"test\"}"
+// or put data in a json file and pass with something like: '-d @body.json'
 ```
 
 In the [example](./example/) folder there are some simple server scripts that uses the plugin (inline but it's the same using it from npm registry).
