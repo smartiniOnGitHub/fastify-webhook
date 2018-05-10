@@ -16,7 +16,7 @@
 'use strict'
 
 const test = require('tap').test
-const simple = require('simple-get')
+const sget = require('simple-get').concat
 const Fastify = require('fastify')
 
 test('default webhook (and empty body) does not return an error, but a good response (200) and some content', (t) => {
@@ -29,7 +29,7 @@ test('default webhook (and empty body) does not return an error, but a good resp
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/webhook`
@@ -54,7 +54,7 @@ test('default webhook (and empty body) but called via GET instead of POST, retur
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'GET',
       url: `http://localhost:${port}/webhook`
     }, (err, response, body) => {
@@ -79,7 +79,7 @@ test('default webhook (and optional input content type and body) does not return
     const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/webhook`,
@@ -118,7 +118,7 @@ test('custom options for webhook and local handler (and empty body) does not ret
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`
@@ -147,7 +147,7 @@ test('custom options for webhook and local handler (and optional input content t
     const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -183,7 +183,7 @@ test('custom options for webhook (using plugin logger handler and empty body) do
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`
@@ -214,7 +214,7 @@ test('custom options for webhook (using plugin logger handler and optional input
     const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -250,7 +250,7 @@ test('custom options for webhook (using plugin echo handler with no mime type an
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`
@@ -282,7 +282,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
     const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -318,7 +318,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
     const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -353,7 +353,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -389,7 +389,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     const sampleData = {'payload': 'test'}
     // const sampleData = '{"payload":"test"}'
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -425,7 +425,7 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`
@@ -458,7 +458,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     const port = fastify.server.address().port
     const sampleData = {'payload': 'test', 'secretKey': 'a Wrong Key'}
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -494,7 +494,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     const port = fastify.server.address().port
     const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -529,7 +529,7 @@ test('custom options for webhook (using plugin echo handler and no input content
     t.error(err)
     const port = fastify.server.address().port
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`
@@ -562,7 +562,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     const port = fastify.server.address().port
     const sampleData = {'payload': 'test', 'secretKey': 'a Wrong Key'}
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
@@ -598,7 +598,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     const port = fastify.server.address().port
     const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
 
-    simple.concat({
+    sget({
       method: 'POST',
       timeout: 2000,
       url: `http://localhost:${port}/custom-webhook`,
