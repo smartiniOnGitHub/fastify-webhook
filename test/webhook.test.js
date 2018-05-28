@@ -616,3 +616,147 @@ test('custom options for webhook (using plugin echo handler and input content ty
     })
   })
 })
+
+const webhookSecretKey = 'my Secret Key'
+
+function checkSecretKey (req, reply, done) {
+  // function that checks the given secret key, if is good or not
+  // note that for simplicity the secret key is mandatory here (not checked in input arguments)
+  if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
+    reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
+  }
+  done()
+}
+
+function checkTokenEven (req, reply, done) {
+  const stringToken = req.params.token || ''
+  // console.log(`chek token: given "${stringToken}", check if it's even`)
+  const numToken = parseInt(stringToken)
+  // console.log(`chek token: "${stringToken}" is a number, ${typeof numToken === 'number'}`)
+  // console.log(`chek token: "${stringToken}" converted into the number ${numToken}`)
+  // function that checks if the given token is good or not
+  // for example even numbers are ok, odd or negatives not
+  // note that for simplicity the user token is mandatory here (not checked in input arguments)
+  if (!isNaN(numToken) && numToken > 0 && (numToken % 2 === 0)) {
+    // reply.code(200).type('application/json')
+    reply.code(200)
+  } else {
+    reply.code(403).type('application/json').send(new Error('Missing or wrong token'))
+  }
+  done()
+}
+
+test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token (needed but not provided), must return a Forbidden error (403) and its description', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook/:token',
+    'handler': webhookHandlers.echo,
+    'secretKey': 'my Secret Key',
+    'beforeHandlers': [checkSecretKey, checkTokenEven]
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    // const userToken = '' // pass token empty
+
+    sget({
+      method: 'POST',
+      timeout: 2000,
+      // url: `http://localhost:${port}/custom-webhook/${userToken}`, // pass token empty
+      url: `http://localhost:${port}/custom-webhook/`, // do not pass the token (or null)
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 403)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token (provided but wrong), must return a Forbidden error (403) and its description', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook/:token',
+    'handler': webhookHandlers.echo,
+    'secretKey': 'my Secret Key',
+    'beforeHandlers': [checkSecretKey, checkTokenEven]
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const userToken = '0999'
+
+    sget({
+      method: 'POST',
+      timeout: 2000,
+      url: `http://localhost:${port}/custom-webhook/${userToken}`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 403)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
+
+      fastify.close()
+    })
+  })
+})
+
+test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token, must return a good response (200) and some content', (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookPlugin = require('../')
+  fastify.register(webhookPlugin, {
+    'url': '/custom-webhook/:token',
+    'handler': webhookHandlers.echo,
+    'secretKey': 'my Secret Key',
+    'beforeHandlers': [checkSecretKey, checkTokenEven]
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    const port = fastify.server.address().port
+    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const userToken = '1000'
+
+    sget({
+      method: 'POST',
+      timeout: 2000,
+      url: `http://localhost:${port}/custom-webhook/${userToken}`,
+      headers: {
+        'content-type': 'application/json' // force the right mime type to send data here
+      },
+      body: JSON.stringify(sampleData)
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
+
+      fastify.close()
+    })
+  })
+})
