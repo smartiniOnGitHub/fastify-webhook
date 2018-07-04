@@ -52,7 +52,7 @@ function checkTokenEven (req, reply, done) {
   done()
 }
 
-const webhookHandlers = require('../handlers.js') // get plugin handlers (but in a relative way), as a sample
+const webhookHandlers = require('../handlers') // get plugin handlers (but in a relative way), as a sample
 const webhookPlugin = require('../') // get the plugin (but in a relative way), as a sample
 fastify.register(webhookPlugin, {
   'url': '/custom-webhook/:token',

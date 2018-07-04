@@ -171,7 +171,7 @@ test('custom options for webhook (using plugin logger handler and empty body) do
   // note that this tests is successful even when given an empty body because input content won't be parsed but only logged
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../') // get a reference to the plugin
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -201,7 +201,7 @@ test('custom options for webhook (using plugin logger handler and empty body) do
 test('custom options for webhook (using plugin logger handler and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../') // get a reference to the plugin
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -238,7 +238,7 @@ test('custom options for webhook (using plugin echo handler with no mime type an
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -269,7 +269,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -305,7 +305,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -341,7 +341,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   // note that this tests is failing because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -375,7 +375,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   // note that this tests is successful because echo handler wants json as input content type, and a valid (non empty) json content
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -412,7 +412,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
 test('custom options for webhook (using plugin acknowledge handler and no input content type and no body content) so no secret key, must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -444,7 +444,7 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
 test('custom options for webhook (using plugin acknowledge handler and input content type and body content) and a wrong secret key, must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -480,7 +480,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
 test('custom options for webhook (using plugin acknowledge handler and input content type and body content) and a secret key, must return a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -516,7 +516,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
 test('custom options for webhook (using plugin echo handler and no input content type and no body content) so no secret key, must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -548,7 +548,7 @@ test('custom options for webhook (using plugin echo handler and no input content
 test('custom options for webhook (using plugin echo handler and input content type and body content) and a wrong secret key, must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -584,7 +584,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
 test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key, must return a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
@@ -649,7 +649,7 @@ function checkTokenEven (req, reply, done) {
 test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token (needed but not provided), must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
@@ -688,7 +688,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
 test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token (provided but wrong), must return a Forbidden error (403) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
@@ -726,7 +726,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
 test('custom options for webhook (using plugin echo handler and input content type and body content) and a secret key and a user token, must return a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
-  const webhookHandlers = require('../handlers.js') // get plugin handlers
+  const webhookHandlers = require('../handlers') // get plugin handlers
   const webhookPlugin = require('../')
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',

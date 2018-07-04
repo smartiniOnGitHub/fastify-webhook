@@ -17,7 +17,7 @@
 
 const fp = require('fastify-plugin')
 
-const webhookHandlers = require('./handlers.js') // get plugin handlers for default handler
+const webhookHandlers = require('./handlers') // get plugin handlers for default handler
 
 function fastifyWebHook (fastify, options, next) {
   const opts = options || {}
