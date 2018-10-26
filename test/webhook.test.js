@@ -294,7 +294,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.error(err)
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(JSON.parse(body), {'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: '})
+      t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: ' })
 
       fastify.close()
     })
@@ -330,7 +330,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
       t.error(err)
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(JSON.parse(body), {'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown'})
+      t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown' })
 
       fastify.close()
     })
@@ -386,7 +386,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test'}
+    const sampleData = { 'payload': 'test' }
     // const sampleData = '{"payload":"test"}'
 
     sget({
@@ -456,7 +456,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test', 'secretKey': 'a Wrong Key'}
+    const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
     sget({
       method: 'POST',
@@ -492,7 +492,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
+    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
     sget({
       method: 'POST',
@@ -560,7 +560,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test', 'secretKey': 'a Wrong Key'}
+    const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
     sget({
       method: 'POST',
@@ -596,7 +596,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     fastify.server.unref()
     t.error(err)
     const port = fastify.server.address().port
-    const sampleData = {'payload': 'test', 'secretKey': 'my Secret Key'}
+    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
     sget({
       method: 'POST',
@@ -610,7 +610,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(JSON.parse(body), {'payload': 'test', 'secretKey': 'my Secret Key'})
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
 
       fastify.close()
     })
