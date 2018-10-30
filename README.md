@@ -1,5 +1,11 @@
 # fastify-webhook
-Fastify Plugin to serve webhooks with some default settings.
+
+  [![NPM Version](https://img.shields.io/npm/v/fastify-webhook.svg?style=flat)](https://npmjs.org/package/fastify-webhook/)
+  [![NPM Downloads](https://img.shields.io/npm/dm/fastify-webhook.svg?style=flat)](https://npmjs.org/package/fastify-webhook/)
+  [![Code Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+  [![Coverage Status](https://coveralls.io/repos/github/smartiniOnGitHub/fastify-webhook/badge.svg?branch=master)](https://coveralls.io/github/smartiniOnGitHub/fastify-webhook/?branch=master)
+
+Fastify Plugin to serve webhooks with some useful default settings.
 
 With this plugin, Fastify will have a route configured for `/webhook` POST requests.
 
