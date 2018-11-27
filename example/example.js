@@ -17,7 +17,7 @@
 
 const fastify = require('fastify')()
 
-fastify.register(require('../plugin'), {
+fastify.register(require('../'), {
 })
 
 // example to handle a sample home request to serve a static page, optional here
@@ -26,12 +26,12 @@ fastify.get('/', function (req, reply) {
   const scriptRelativeFolder = path.join(__dirname, path.sep)
   const fs = require('fs')
   const stream = fs.createReadStream(path.join(scriptRelativeFolder, 'home.html'))
-  reply.type('text/html').send(stream)
+  reply.type('text/html; charset=utf-8').send(stream)
 })
 
-fastify.listen(3000, '0.0.0.0', (err) => {
+fastify.listen(3000, '127.0.0.1', (err, address) => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
+  console.log(`Server listening on '${address}' ...`)
 })
 
 fastify.ready(() => {

@@ -24,15 +24,14 @@ test('default webhook (and empty body) does not return an error, but a good resp
   const fastify = Fastify()
   fastify.register(require('../')) // configure this plugin with its default options
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/webhook`
+      url: `${address}/webhook`
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -49,14 +48,13 @@ test('default webhook (and empty body) but called via GET instead of POST, retur
   const fastify = Fastify()
   fastify.register(require('../')) // configure this plugin with its default options
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'GET',
-      url: `http://localhost:${port}/webhook`
+      url: `${address}/webhook`
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -73,16 +71,15 @@ test('default webhook (and optional input content type and body) does not return
   const fastify = Fastify()
   fastify.register(require('../')) // configure this plugin with its default options
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/webhook`,
+      url: `${address}/webhook`,
       // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
       headers: {
         'content-type': 'application/json'
@@ -113,15 +110,14 @@ test('custom options for webhook and local handler (and empty body) does not ret
     'handler': consoleLoggerHandler
   }) // configure this plugin with some custom options
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`
+      url: `${address}/custom-webhook`
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -141,16 +137,15 @@ test('custom options for webhook and local handler (and optional input content t
     'handler': consoleLoggerHandler
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
       headers: {
         'content-type': 'application/json'
@@ -178,15 +173,14 @@ test('custom options for webhook (using plugin logger handler and empty body) do
     'handler': webhookHandlers.logger
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`
+      url: `${address}/custom-webhook`
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -208,16 +202,15 @@ test('custom options for webhook (using plugin logger handler and optional input
     'handler': webhookHandlers.logger
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       // add some json payload (optional here), and of course all must work even without adding it, see previous test ...
       headers: {
         'content-type': 'application/json'
@@ -245,15 +238,14 @@ test('custom options for webhook (using plugin echo handler with no mime type an
     'handler': webhookHandlers.echo
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`
+      url: `${address}/custom-webhook`
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
@@ -276,16 +268,15 @@ test('custom options for webhook (using plugin echo handler with given but empty
     'handler': webhookHandlers.echo
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': '' // force an empty mime type
       },
@@ -312,16 +303,15 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
     'handler': webhookHandlers.echo
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/unknown' // force a mime type not handled directly by Fastify
       },
@@ -348,15 +338,14 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'handler': webhookHandlers.echo
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       }
@@ -382,17 +371,16 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'handler': webhookHandlers.echo
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test' }
     // const sampleData = '{"payload":"test"}'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -420,15 +408,14 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`
+      url: `${address}/custom-webhook`
       // no secret key provided (in the body content)
     }, (err, response, body) => {
       t.error(err)
@@ -452,16 +439,15 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -488,16 +474,15 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -524,15 +509,14 @@ test('custom options for webhook (using plugin echo handler and no input content
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`
+      url: `${address}/custom-webhook`
       // no secret key provided (in the body content)
     }, (err, response, body) => {
       t.error(err)
@@ -556,16 +540,15 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -592,16 +575,15 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'secretKey': 'my Secret Key'
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook`,
+      url: `${address}/custom-webhook`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -658,18 +640,17 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     // const userToken = '' // pass token empty
 
     sget({
       method: 'POST',
       timeout: 2000,
-      // url: `http://localhost:${port}/custom-webhook/${userToken}`, // pass token empty
-      url: `http://localhost:${port}/custom-webhook/`, // do not pass the token (or null)
+      // url: `${address}/custom-webhook/${userToken}`, // pass token empty
+      url: `${address}/custom-webhook/`, // do not pass the token (or null)
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -697,17 +678,16 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     const userToken = '0999'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook/${userToken}`,
+      url: `${address}/custom-webhook/${userToken}`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
@@ -735,17 +715,16 @@ test('custom options for webhook (using plugin echo handler and input content ty
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen(0, (err, address) => {
     fastify.server.unref()
     t.error(err)
-    const port = fastify.server.address().port
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     const userToken = '1000'
 
     sget({
       method: 'POST',
       timeout: 2000,
-      url: `http://localhost:${port}/custom-webhook/${userToken}`,
+      url: `${address}/custom-webhook/${userToken}`,
       headers: {
         'content-type': 'application/json' // force the right mime type to send data here
       },
