@@ -41,7 +41,8 @@ In the [example](./example/) folder there are some simple server scripts that us
 
 ## Requirements
 
-Fastify 0.43.0 or later.
+Fastify ^1.1.0 .
+Node.js 8.12.x or later.
 
 
 ## Note
