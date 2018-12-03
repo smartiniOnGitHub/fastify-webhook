@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.3.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.3.0) (2018-12-03)
+Summary Changelog:
+- Update required Fastify version to '^1.1.0', but stay on 1.x
+- Update dependency on 'fastify-plugin' to '^1.2.1'
+- Updated plugins
+- Updated unit tests and examples to use new Fastify syntax/features
+- In examples, listen to '127.0.0.1' and no more to all addresses ('0.0.0.0'),
+  best practice for examples (unless you need to publish from a container)
+- Move plugin main source in a 'src' folder
+- Small cleanup and simplifications in the code base
+
 ## [0.2.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.2.0) (2018-05-29)
 Summary Changelog:
 - Changed dev dependencies from 'request' to 'simple-get' and related tests, like in Fastify and related core plugins
