@@ -21,8 +21,8 @@ fastify.register(require('fastify-webhook'))
 // example with custom webhook url and handler, and secret key
 // fastify.register(require('fastify-webhook'), {'url': '/custom-webhook', 'handler': myWebhookHandler, 'secretKey': 'secret key'})
 //
-// note that to use one of handlers bundled with the plugin, you need to get a reference to the plugin script 'handlers', and then as handler pass a reference to desired function, like:
-// const webhookHandlers = require('fastify-webhook/handlers') // get plugin handlers (optional)
+// note that to use one of handlers bundled with the plugin, you need to get a reference to the plugin script 'src/handlers', and then as handler pass a reference to desired function, like:
+// const webhookHandlers = require('fastify-webhook/src/handlers') // get plugin handlers (optional)
 // const webhookPlugin = require('fastify-webhook')
 // fastify.register(webhookPlugin, { 'url': '/custom-webhook', 'handler': webhookHandlers.echo, 'secretKey': 'secret key'})
 //
@@ -50,7 +50,7 @@ Node.js 8.14.x or later.
 By default the plugin map a default handler on the URI `/webhook` to be called via POST, otherwise it's possible to change via the setting 'url' in plugin options.
 
 The plugin exposes some handlers, for common base operations (and webhook debug help).
-To use one of them, before registering the plugin, you need to get a reference from its `handlers` source file;
+To use one of them, before registering the plugin, you need to get a reference from its `src/handlers` source file;
 then you can configure the desired one in the setting 'handler' in plugin options.
 They are:
 - `acknowledge` (default handler) that simply acknowledge the request, and reply with a simple json response

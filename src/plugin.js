@@ -26,10 +26,15 @@ function fastifyWebHook (fastify, options, next) {
   const disableDefaultWebhook = opts.disableDefaultWebhook || false
   const webhookSecretKey = opts.secretKey || null
   const webhookBeforeHandlers = opts.beforeHandlers || [
-    function checkSecretKey (req, reply, done) {
+    function checkSecretKey (request, reply, done) {
       if (webhookSecretKey) {
-        if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
-          reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
+        const contentType = request.headers['content-type'] || ''
+        const secretKey = (request.body) ? request.body.secretKey : ''
+        // console.log(`DEBUG: checkSecretKey: webhookSecretKey = ${webhookSecretKey}, http method=${request.req.method}, content-type=${contentType}, body secretkey = ${secretKey}`)
+        if (request.req.method !== 'POST' ||
+          !contentType.startsWith('application/json') ||
+          secretKey !== webhookSecretKey) {
+          reply.code(403).send(new Error('Missing or wrong secret key'))
         }
       }
       done()
