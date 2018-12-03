@@ -30,7 +30,6 @@ function fastifyWebHook (fastify, options, next) {
       if (webhookSecretKey) {
         const contentType = request.headers['content-type'] || ''
         const secretKey = (request.body) ? request.body.secretKey : ''
-        // console.log(`DEBUG: checkSecretKey: webhookSecretKey = ${webhookSecretKey}, http method=${request.req.method}, content-type=${contentType}, body secretkey = ${secretKey}`)
         if (request.req.method !== 'POST' ||
           !contentType.startsWith('application/json') ||
           secretKey !== webhookSecretKey) {
