@@ -20,7 +20,8 @@
 
 function _getRequestMimeType (request) {
   return request.headers['content-type']
-  // return req.getHeader('content-type')
+  // return request.getHeader('content-type')
+  // return request.getType()
 }
 
 function _defaultSuccessWebhookReply (reply) {
