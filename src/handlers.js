@@ -18,8 +18,8 @@
 // this module exports some handlers that could be used
 // as default and non-default plugin conmfiguration
 
-function _getRequestMimeType (req) {
-  return req.headers['content-type']
+function _getRequestMimeType (request) {
+  return request.headers['content-type']
   // return req.getHeader('content-type')
 }
 

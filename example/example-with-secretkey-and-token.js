@@ -25,10 +25,10 @@ const fastify = require('fastify')({
 // handle secret key (fixed) and user token (user-dependent), as a sample
 const webhookSecretKey = 'my example Secret Key'
 
-function checkSecretKey (req, reply, done) {
+function checkSecretKey (request, reply, done) {
   // function that checks the given secret key, if is good or not
   // note that for simplicity the secret key is mandatory here (not checked in input arguments)
-  if (req.headers['content-type'] !== 'application/json' || req.body.secretKey !== webhookSecretKey) {
+  if (request.headers['content-type'] !== 'application/json' || request.body.secretKey !== webhookSecretKey) {
     reply.code(403).type('application/json').send(new Error('Missing or wrong secret key'))
   }
   done()
