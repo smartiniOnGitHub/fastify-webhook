@@ -17,8 +17,7 @@
 
 const fastify = require('fastify')()
 
-fastify.register(require('../'), {
-})
+fastify.register(require('../'))
 
 // example to handle a sample home request to serve a static page, optional here
 fastify.get('/', function (req, reply) {

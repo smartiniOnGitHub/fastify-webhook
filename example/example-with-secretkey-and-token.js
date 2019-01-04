@@ -55,10 +55,10 @@ function checkTokenEven (req, reply, done) {
 const webhookHandlers = require('../src/handlers') // get plugin handlers (but in a relative way), as a sample
 const webhookPlugin = require('../') // get the plugin (but in a relative way), as a sample
 fastify.register(webhookPlugin, {
-  'url': '/custom-webhook/:token',
-  'handler': webhookHandlers.echo,
-  'secretKey': webhookSecretKey,
-  'beforeHandlers': [checkSecretKey, checkTokenEven]
+  url: '/custom-webhook/:token',
+  handler: webhookHandlers.echo,
+  secretKey: webhookSecretKey,
+  beforeHandlers: [checkSecretKey, checkTokenEven]
 })
 
 // example to handle a sample home request to serve a static page, optional here
@@ -82,8 +82,8 @@ fastify.ready(() => {
   console.log(`To test the webhook, from another terminal, do something like:
   KO (no secret key, no token): curl http://127.0.0.1:3000/custom-webhook/ -X POST -H "Content-Type: application/json" -d '{"payload":"test"}'
   KO (bad secret key, no token): curl http://127.0.0.1:3000/custom-webhook/ -X POST -H "Content-Type: application/json" -d '{"payload":"test", "secretKey":"my bad Secret Key"}'
-  KO (good secret key, bad token): curl http://127.0.0.1:3000/custom-webhook/0999 -X POST -H "Content-Type: application/json" -d '{"payload":"test", "secretKey":"my example Secret Key"}'
-  OK (good secret key, good token): curl http://127.0.0.1:3000/custom-webhook/1000 -X POST -H "Content-Type: application/json" -d '{"payload":"test", "secretKey":"my example Secret Key"}'
+  KO (good secret key, bad token): curl http://127.0.0.1:3000/custom-webhook/0999 -X POST -H 'Content-Type: application/json' -d '{"payload":"test", "secretKey":"my example Secret Key"}'
+  OK (good secret key, good token): curl http://127.0.0.1:3000/custom-webhook/1000 -X POST -H 'Content-Type: application/json' -d '{"payload":"test", "secretKey":"my example Secret Key"}'
   etc ...
   Or similar commands with wget ...
   Note that in Windows curl wants to escape json inner string delimiter.
