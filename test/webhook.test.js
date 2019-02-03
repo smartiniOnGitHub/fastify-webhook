@@ -22,10 +22,10 @@ const Fastify = require('fastify')
 test('default webhook (and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../')) // configure this plugin with its default options
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -37,8 +37,6 @@ test('default webhook (and empty body) does not return an error, but a good resp
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -46,10 +44,10 @@ test('default webhook (and empty body) does not return an error, but a good resp
 test('default webhook (and empty body) but called via GET instead of POST, return a not found error (404) and its description', (t) => {
   t.plan(5)
   const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../')) // configure this plugin with its default options
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -60,8 +58,6 @@ test('default webhook (and empty body) but called via GET instead of POST, retur
       t.strictEqual(response.statusCode, 404)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not Found' })
-
-      fastify.close()
     })
   })
 })
@@ -69,10 +65,10 @@ test('default webhook (and empty body) but called via GET instead of POST, retur
 test('default webhook (and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../')) // configure this plugin with its default options
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = '{"payload":"test"}'
 
@@ -90,8 +86,6 @@ test('default webhook (and optional input content type and body) does not return
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -104,13 +98,13 @@ function consoleLoggerHandler (request, reply) {
 test('custom options for webhook and local handler (and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../'), {
     'url': '/custom-webhook',
     'handler': consoleLoggerHandler
   }) // configure this plugin with some custom options
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -122,8 +116,6 @@ test('custom options for webhook and local handler (and empty body) does not ret
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -131,13 +123,13 @@ test('custom options for webhook and local handler (and empty body) does not ret
 test('custom options for webhook and local handler (and optional input content type and body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
   const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../'), {
     'url': '/custom-webhook',
     'handler': consoleLoggerHandler
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = '{"payload":"test"}'
 
@@ -155,8 +147,6 @@ test('custom options for webhook and local handler (and optional input content t
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -167,13 +157,13 @@ test('custom options for webhook (using plugin logger handler and empty body) do
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../') // get a reference to the plugin
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.logger
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -185,8 +175,6 @@ test('custom options for webhook (using plugin logger handler and empty body) do
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -196,13 +184,13 @@ test('custom options for webhook (using plugin logger handler and optional input
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../') // get a reference to the plugin
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.logger
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = '{"payload":"test"}'
 
@@ -220,8 +208,6 @@ test('custom options for webhook (using plugin logger handler and optional input
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -232,13 +218,13 @@ test('custom options for webhook (using plugin echo handler with no mime type an
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -250,8 +236,6 @@ test('custom options for webhook (using plugin echo handler with no mime type an
       t.strictEqual(response.statusCode, 500)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 500, error: 'Internal Server Error', message: 'Missing or wrong input MIME Type: "undefined"' })
-
-      fastify.close()
     })
   })
 })
@@ -262,13 +246,13 @@ test('custom options for webhook (using plugin echo handler with given but empty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = '{"payload":"test"}'
 
@@ -285,8 +269,6 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: ' })
-
-      fastify.close()
     })
   })
 })
@@ -297,13 +279,13 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = '{"payload":"test"}'
 
@@ -320,8 +302,6 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown' })
-
-      fastify.close()
     })
   })
 })
@@ -332,13 +312,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -353,8 +333,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 400)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
-
-      fastify.close()
     })
   })
 })
@@ -365,13 +343,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test' }
     // const sampleData = '{"payload":"test"}'
@@ -390,8 +368,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), sampleData)
-
-      fastify.close()
     })
   })
 })
@@ -401,6 +377,7 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
@@ -408,7 +385,6 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -421,8 +397,6 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
-
-      fastify.close()
     })
   })
 })
@@ -432,6 +406,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
@@ -439,7 +414,6 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
@@ -456,8 +430,6 @@ test('custom options for webhook (using plugin acknowledge handler and input con
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
-
-      fastify.close()
     })
   })
 })
@@ -467,6 +439,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
@@ -474,7 +447,6 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
@@ -491,8 +463,6 @@ test('custom options for webhook (using plugin acknowledge handler and input con
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
-
-      fastify.close()
     })
   })
 })
@@ -502,6 +472,7 @@ test('custom options for webhook (using plugin echo handler and no input content
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
@@ -509,7 +480,6 @@ test('custom options for webhook (using plugin echo handler and no input content
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -522,8 +492,6 @@ test('custom options for webhook (using plugin echo handler and no input content
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
-
-      fastify.close()
     })
   })
 })
@@ -533,6 +501,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
@@ -540,7 +509,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
 
@@ -557,8 +525,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
-
-      fastify.close()
     })
   })
 })
@@ -568,6 +534,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
@@ -575,7 +542,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
 
@@ -592,8 +558,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
-
-      fastify.close()
     })
   })
 })
@@ -631,6 +595,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
@@ -639,7 +604,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     // const userToken = '' // pass token empty
@@ -658,8 +622,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
-
-      fastify.close()
     })
   })
 })
@@ -669,6 +631,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
@@ -677,7 +640,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     const userToken = '0999'
@@ -695,8 +657,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 403)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
-
-      fastify.close()
     })
   })
 })
@@ -706,6 +666,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const fastify = Fastify()
   const webhookHandlers = require('../src/handlers') // get plugin handlers
   const webhookPlugin = require('../')
+  t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
@@ -714,7 +675,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
   })
 
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.error(err)
     const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
     const userToken = '1000'
@@ -732,8 +692,6 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
-
-      fastify.close()
     })
   })
 })
