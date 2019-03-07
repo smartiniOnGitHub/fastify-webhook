@@ -1,6 +1,6 @@
 {
   "name": "fastify-webhook",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Fastify Plugin to serve webhooks with some default settings",
   "main": "src/plugin",
   "scripts": {
@@ -8,16 +8,17 @@
     "example-enhanced": "node example/example-with-secretkey-and-token",
     "lint": "standard",
     "test:unit": "tap -J test/*.test.js test/*/*.test.js",
+    "test:unit:debug": "tap -T --strict --node-arg=--inspect-brk test/*.test.js test/*/*.test.js",
     "test": "npm run lint && npm run test:unit"
   },
   "dependencies": {
-    "fastify-plugin": "^1.4.0"
+    "fastify-plugin": "^1.5.0"
   },
   "devDependencies": {
-    "fastify": "^1.13.4",
+    "fastify": "^1.14.3",
     "simple-get": "^3.0.3",
     "standard": "^12.0.1",
-    "tap": "^12.5.1"
+    "tap": "^12.6.0"
   },
   "peerDependencies": {},
   "engines": {
