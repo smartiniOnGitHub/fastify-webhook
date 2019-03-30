@@ -20,46 +20,47 @@ const fp = require('fastify-plugin')
 const webhookHandlers = require('./handlers') // get plugin handlers for default handler
 
 function fastifyWebHook (fastify, options, next) {
-  const opts = options || {}
-  const webhookUrl = opts.url || '/webhook'
-  const webhookHandler = opts.handler || webhookHandlers.acknowledge
-  const disableDefaultWebhook = opts.disableDefaultWebhook || false
-  const webhookSecretKey = opts.secretKey || null
-  const webhookBeforeHandlers = opts.beforeHandlers || [
-    function checkSecretKey (request, reply, done) {
-      if (webhookSecretKey) {
-        const contentType = request.headers['content-type'] || ''
-        const secretKey = (request.body) ? request.body.secretKey : ''
-        if (request.req.method !== 'POST' ||
-          !contentType.startsWith('application/json') ||
-          secretKey !== webhookSecretKey) {
-          reply.code(403).send(new Error('Missing or wrong secret key'))
-        }
-      }
-      done()
-    }
-  ]
+  const {
+    url = '/webhook',
+    handler = webhookHandlers.acknowledge,
+    disableDefaultWebhook = false,
+    secretKey = null,
+    beforeHandlers = [ checkSecretKey ]
+  } = options
 
-  if (typeof webhookUrl !== 'string') {
-    throw new TypeError(`The option url must be a string, instead got a '${typeof webhookUrl}'`)
+  function checkSecretKey (request, reply, done) {
+    if (secretKey) {
+      const contentType = request.headers['content-type'] || ''
+      const requestSecretKey = (request.body) ? request.body.secretKey : ''
+      if (request.req.method !== 'POST' ||
+        !contentType.startsWith('application/json') ||
+        requestSecretKey !== secretKey) {
+        reply.code(403).send(new Error('Missing or wrong secret key'))
+      }
+    }
+    done()
   }
-  if (typeof webhookHandler !== 'function') {
-    throw new TypeError(`The option webhook must be a function, instead got a '${typeof webhookHandler}'`)
+
+  if (typeof url !== 'string') {
+    throw new TypeError(`The option url must be a string, instead got a '${typeof url}'`)
   }
-  if (webhookSecretKey !== null && typeof webhookSecretKey !== 'string') {
-    throw new TypeError(`The option secretKey must be a string, instead got a '${typeof webhookSecretKey}'`)
+  if (typeof handler !== 'function') {
+    throw new TypeError(`The option webhook must be a function, instead got a '${typeof handler}'`)
   }
-  if (webhookBeforeHandlers !== null && !Array.isArray(webhookBeforeHandlers)) {
-    throw new TypeError(`The option beforeHandlers must be an array (of functions), instead got a '${typeof webhookBeforeHandlers}'`)
+  if (secretKey !== null && typeof secretKey !== 'string') {
+    throw new TypeError(`The option secretKey must be a string, instead got a '${typeof secretKey}'`)
+  }
+  if (beforeHandlers !== null && !Array.isArray(beforeHandlers)) {
+    throw new TypeError(`The option beforeHandlers must be an array (of functions), instead got a '${typeof beforeHandlers}'`)
   }
 
   // execute plugin code
   if (!disableDefaultWebhook) {
     fastify.route({
       method: 'POST',
-      url: webhookUrl,
-      beforeHandler: webhookBeforeHandlers,
-      handler: webhookHandler
+      url,
+      beforeHandler: beforeHandlers,
+      handler
     })
   }
 
