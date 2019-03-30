@@ -15,9 +15,19 @@
  */
 'use strict'
 
+const assert = require('assert')
 const test = require('tap').test
 const sget = require('simple-get').concat
 const Fastify = require('fastify')
+
+const secrets = {
+  // secretKeyEnv: process.env.SECRET_KEY || '',
+  secretKeyGood: process.env.SECRET_KEY || 'my Secret Key',
+  secretKeyBad: process.env.SECRET_KEY_ALT || 'a Wrong Key'
+}
+assert(secrets !== null)
+
+const defaultReplyType = 'application/json; charset=utf-8'
 
 test('default webhook (and empty body) does not return an error, but a good response (200) and some content', (t) => {
   t.plan(5)
@@ -35,7 +45,7 @@ test('default webhook (and empty body) does not return an error, but a good resp
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -56,7 +66,7 @@ test('default webhook (and empty body) but called via GET instead of POST, retur
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not Found' })
     })
   })
@@ -84,7 +94,7 @@ test('default webhook (and optional input content type and body) does not return
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -114,7 +124,7 @@ test('custom options for webhook and local handler (and empty body) does not ret
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -145,7 +155,7 @@ test('custom options for webhook and local handler (and optional input content t
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -173,7 +183,7 @@ test('custom options for webhook (using plugin logger handler and empty body) do
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -206,7 +216,7 @@ test('custom options for webhook (using plugin logger handler and optional input
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -234,7 +244,7 @@ test('custom options for webhook (using plugin echo handler with no mime type an
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 500, error: 'Internal Server Error', message: 'Missing or wrong input MIME Type: "undefined"' })
     })
   })
@@ -267,7 +277,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 415)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: ' })
     })
   })
@@ -300,7 +310,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 415)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown' })
     })
   })
@@ -331,7 +341,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
     })
   })
@@ -366,7 +376,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), sampleData)
     })
   })
@@ -381,7 +391,7 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
@@ -395,7 +405,7 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
     })
   })
@@ -410,12 +420,12 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyBad }
 
     sget({
       method: 'POST',
@@ -428,7 +438,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
     })
   })
@@ -443,12 +453,12 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.acknowledge,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
 
     sget({
       method: 'POST',
@@ -461,7 +471,7 @@ test('custom options for webhook (using plugin acknowledge handler and input con
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
   })
@@ -476,7 +486,7 @@ test('custom options for webhook (using plugin echo handler and no input content
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
@@ -490,7 +500,7 @@ test('custom options for webhook (using plugin echo handler and no input content
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
     })
   })
@@ -505,12 +515,12 @@ test('custom options for webhook (using plugin echo handler and input content ty
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'a Wrong Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyBad }
 
     sget({
       method: 'POST',
@@ -523,7 +533,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong secret key' })
     })
   })
@@ -538,12 +548,12 @@ test('custom options for webhook (using plugin echo handler and input content ty
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key'
+    'secretKey': secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
 
     sget({
       method: 'POST',
@@ -556,13 +566,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': secrets.secretKeyGood })
     })
   })
 })
 
-const webhookSecretKey = 'my Secret Key'
+const webhookSecretKey = secrets.secretKeyGood
 
 function checkSecretKey (request, reply, done) {
   // function that checks the given secret key, if is good or not
@@ -599,13 +609,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key',
+    'secretKey': secrets.secretKeyGood,
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
     // const userToken = '' // pass token empty
 
     sget({
@@ -620,7 +630,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
     })
   })
@@ -635,13 +645,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key',
+    'secretKey': secrets.secretKeyGood,
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
     const userToken = '0999'
 
     sget({
@@ -655,7 +665,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 403)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 403, error: 'Forbidden', message: 'Missing or wrong token' })
     })
   })
@@ -670,13 +680,13 @@ test('custom options for webhook (using plugin echo handler and input content ty
   fastify.register(webhookPlugin, {
     'url': '/custom-webhook/:token',
     'handler': webhookHandlers.echo,
-    'secretKey': 'my Secret Key',
+    'secretKey': secrets.secretKeyGood,
     'beforeHandlers': [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': 'my Secret Key' }
+    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
     const userToken = '1000'
 
     sget({
@@ -690,8 +700,8 @@ test('custom options for webhook (using plugin echo handler and input content ty
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': 'my Secret Key' })
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': secrets.secretKeyGood })
     })
   })
 })

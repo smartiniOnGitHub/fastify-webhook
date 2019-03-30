@@ -23,7 +23,8 @@ const fastify = require('fastify')({
 })
 
 // handle secret key (fixed) and user token (user-dependent), as a sample
-const webhookSecretKey = 'my example Secret Key'
+// if the env var SECRET_KEY is defined, it's value is used, otherwise a default value will be used
+const webhookSecretKey = process.env.SECRET_KEY || 'my example Secret Key'
 
 function checkSecretKey (request, reply, done) {
   // function that checks the given secret key, if is good or not
