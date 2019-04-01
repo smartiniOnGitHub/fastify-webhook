@@ -24,6 +24,7 @@ function fastifyWebHook (fastify, options, next) {
     url = '/webhook',
     handler = webhookHandlers.acknowledge,
     disableWebhook = false,
+    enableGetPlaceholder = false,
     secretKey = null,
     beforeHandlers = [ checkSecretKey ]
   } = options
@@ -41,11 +42,18 @@ function fastifyWebHook (fastify, options, next) {
     done()
   }
 
+  // check plugin options
   if (typeof url !== 'string') {
     throw new TypeError(`The option url must be a string, instead got a '${typeof url}'`)
   }
   if (typeof handler !== 'function') {
     throw new TypeError(`The option webhook must be a function, instead got a '${typeof handler}'`)
+  }
+  if (typeof disableWebhook !== 'boolean') {
+    throw new TypeError(`The option disableWebhook must be a boolean, instead got a '${typeof disableWebhook}'`)
+  }
+  if (typeof enableGetPlaceholder !== 'boolean') {
+    throw new TypeError(`The option enableGetPlaceholder must be a boolean, instead got a '${typeof enableGetPlaceholder}'`)
   }
   if (secretKey !== null && typeof secretKey !== 'string') {
     throw new TypeError(`The option secretKey must be a string, instead got a '${typeof secretKey}'`)
@@ -55,13 +63,18 @@ function fastifyWebHook (fastify, options, next) {
   }
 
   // execute plugin code
-  if (!disableWebhook) {
+  if (disableWebhook === false) {
     fastify.route({
       method: 'POST',
       url,
       beforeHandler: beforeHandlers,
       handler
     })
+    if (enableGetPlaceholder === true) {
+      fastify.get(url, {}, (request, reply) => {
+        reply.code(405).send(new Error('Placeholder for a webhook, you need to call via POST'))
+      })
+    }
   }
 
   next()

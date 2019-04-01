@@ -58,6 +58,8 @@ const webhookPlugin = require('../') // get the plugin (but in a relative way), 
 fastify.register(webhookPlugin, {
   url: '/custom-webhook/:token',
   handler: webhookHandlers.echo,
+  // disableWebhook: false, // same as default
+  enableGetPlaceholder: true, // as a sample
   secretKey: webhookSecretKey,
   beforeHandlers: [checkSecretKey, checkTokenEven]
 })

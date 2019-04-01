@@ -106,12 +106,12 @@ function consoleLoggerHandler (request, reply) {
 }
 
 test('custom options for webhook and local handler (and empty body) does not return an error, but a good response (200) and some content', (t) => {
-  t.plan(5)
+  t.plan(9)
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../'), {
-    'url': '/custom-webhook',
-    'handler': consoleLoggerHandler
+    url: '/custom-webhook',
+    handler: consoleLoggerHandler
   }) // configure this plugin with some custom options
 
   fastify.listen(0, (err, address) => {
@@ -127,6 +127,90 @@ test('custom options for webhook and local handler (and empty body) does not ret
       t.strictEqual(response.headers['content-type'], defaultReplyType)
       t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
     })
+    // ensure by default webhook is not published via GET
+    sget({
+      method: 'GET',
+      url: `${address}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not Found' })
+    })
+  })
+})
+
+test('custom options for disabled webhook and get placeholder and local handler (and empty body) return a not found error', (t) => {
+  t.plan(9)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.register(require('../'), {
+    url: '/custom-webhook',
+    handler: consoleLoggerHandler,
+    disableWebhook: true,
+    enableGetPlaceholder: true
+  }) // configure this plugin with some custom options
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      timeout: 2000,
+      url: `${address}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not Found' })
+    })
+    // ensure webhook is not published via GET, because it's disabled here (takes priority)
+    sget({
+      method: 'GET',
+      url: `${address}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { statusCode: 404, error: 'Not Found', message: 'Not Found' })
+    })
+  })
+})
+
+test('custom options for enabled webhook and get placeholder and local handler (and empty body) return a good response, but a not allowed error on the get', (t) => {
+  t.plan(9)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.register(require('../'), {
+    url: '/custom-webhook',
+    handler: consoleLoggerHandler,
+    disableWebhook: false, // same as default
+    enableGetPlaceholder: true
+  }) // configure this plugin with some custom options
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      timeout: 2000,
+      url: `${address}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { statusCode: 200, result: 'success' })
+    })
+    // ensure webhook is not published via GET, because it's disabled here (takes priority)
+    sget({
+      method: 'GET',
+      url: `${address}/custom-webhook`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 405)
+      t.strictEqual(response.headers['content-type'], defaultReplyType)
+      t.deepEqual(JSON.parse(body), { statusCode: 405, error: 'Method Not Allowed', message: 'Placeholder for a webhook, you need to call via POST' })
+    })
   })
 })
 
@@ -135,8 +219,8 @@ test('custom options for webhook and local handler (and optional input content t
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(require('../'), {
-    'url': '/custom-webhook',
-    'handler': consoleLoggerHandler
+    url: '/custom-webhook',
+    handler: consoleLoggerHandler
   })
 
   fastify.listen(0, (err, address) => {
@@ -169,8 +253,8 @@ test('custom options for webhook (using plugin logger handler and empty body) do
   const webhookPlugin = require('../') // get a reference to the plugin
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.logger
+    url: '/custom-webhook',
+    handler: webhookHandlers.logger
   })
 
   fastify.listen(0, (err, address) => {
@@ -196,8 +280,8 @@ test('custom options for webhook (using plugin logger handler and optional input
   const webhookPlugin = require('../') // get a reference to the plugin
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.logger
+    url: '/custom-webhook',
+    handler: webhookHandlers.logger
   })
 
   fastify.listen(0, (err, address) => {
@@ -230,8 +314,8 @@ test('custom options for webhook (using plugin echo handler with no mime type an
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
@@ -258,8 +342,8 @@ test('custom options for webhook (using plugin echo handler with given but empty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
@@ -291,8 +375,8 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
@@ -324,8 +408,8 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
@@ -355,8 +439,8 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo
   })
 
   fastify.listen(0, (err, address) => {
@@ -389,9 +473,9 @@ test('custom options for webhook (using plugin acknowledge handler and no input 
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.acknowledge,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.acknowledge,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
@@ -418,14 +502,14 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.acknowledge,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.acknowledge,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyBad }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyBad }
 
     sget({
       method: 'POST',
@@ -451,14 +535,14 @@ test('custom options for webhook (using plugin acknowledge handler and input con
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.acknowledge,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.acknowledge,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyGood }
 
     sget({
       method: 'POST',
@@ -484,9 +568,9 @@ test('custom options for webhook (using plugin echo handler and no input content
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
@@ -513,14 +597,14 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyBad }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyBad }
 
     sget({
       method: 'POST',
@@ -546,14 +630,14 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood
+    url: '/custom-webhook',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyGood }
 
     sget({
       method: 'POST',
@@ -567,7 +651,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], defaultReplyType)
-      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': secrets.secretKeyGood })
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', secretKey: secrets.secretKeyGood })
     })
   })
 })
@@ -607,15 +691,15 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook/:token',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood,
-    'beforeHandlers': [checkSecretKey, checkTokenEven]
+    url: '/custom-webhook/:token',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood,
+    beforeHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyGood }
     // const userToken = '' // pass token empty
 
     sget({
@@ -643,15 +727,15 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook/:token',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood,
-    'beforeHandlers': [checkSecretKey, checkTokenEven]
+    url: '/custom-webhook/:token',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood,
+    beforeHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyGood }
     const userToken = '0999'
 
     sget({
@@ -678,15 +762,15 @@ test('custom options for webhook (using plugin echo handler and input content ty
   const webhookPlugin = require('../')
   t.tearDown(fastify.close.bind(fastify))
   fastify.register(webhookPlugin, {
-    'url': '/custom-webhook/:token',
-    'handler': webhookHandlers.echo,
-    'secretKey': secrets.secretKeyGood,
-    'beforeHandlers': [checkSecretKey, checkTokenEven]
+    url: '/custom-webhook/:token',
+    handler: webhookHandlers.echo,
+    secretKey: secrets.secretKeyGood,
+    beforeHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    const sampleData = { 'payload': 'test', 'secretKey': secrets.secretKeyGood }
+    const sampleData = { 'payload': 'test', secretKey: secrets.secretKeyGood }
     const userToken = '1000'
 
     sget({
@@ -701,7 +785,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], defaultReplyType)
-      t.deepEqual(JSON.parse(body), { 'payload': 'test', 'secretKey': secrets.secretKeyGood })
+      t.deepEqual(JSON.parse(body), { 'payload': 'test', secretKey: secrets.secretKeyGood })
     })
   })
 })
