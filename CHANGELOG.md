@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.4.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.4.0) (unreleased)
+## [0.4.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.4.0) (2019-04-01)
 Summary Changelog:
 - Align with latest Fastify v1 (and related plugins)
 - Updated all dependencies
@@ -9,6 +9,10 @@ Summary Changelog:
 - Improve tests and examples, to read 'secretKey' value from env var SECRET_KEY 
   or otherwise from a fixed default value
 - Breaking Change: rename plugin option 'disableDefaultWebhook' into 'disableWebhook'
+- Add plugin option 'enableGetPlaceholder' (default false) to publish via GET 
+  a route with the same path of the webhook, 
+  but returning an HTTP Error 405 Method Not Allowed;
+  add a sample usage in the 'example-enhanced'
 
 ## [0.3.2](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.3.2) (2019-02-03)
 Summary Changelog:
