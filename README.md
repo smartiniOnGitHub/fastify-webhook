@@ -62,7 +62,7 @@ but of course for a real world usage you need to specify your own handler functi
 Otherwise you can use yours, with signature `function handler (req, reply)`.
 
 Other plugin options:
-- 'disableDefaultWebhook' (default false) to disable the registration of the route for the webhook
+- 'disableWebhook' (default false) to disable the registration of the route for the webhook
 - 'secretKey' (default null) to specify a string as secret key that callers of the webhook must provide, or webhook will reply with an error
 - 'beforeHandlers' is a list of functions to be used as beforeHandler in the specific route of the webhook; currently the list contains an internal function to check the secret key (if given); otherwise you can define and use yours, with signature `function beforeHandler (req, reply, done)`.
 

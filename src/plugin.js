@@ -23,7 +23,7 @@ function fastifyWebHook (fastify, options, next) {
   const {
     url = '/webhook',
     handler = webhookHandlers.acknowledge,
-    disableDefaultWebhook = false,
+    disableWebhook = false,
     secretKey = null,
     beforeHandlers = [ checkSecretKey ]
   } = options
@@ -55,7 +55,7 @@ function fastifyWebHook (fastify, options, next) {
   }
 
   // execute plugin code
-  if (!disableDefaultWebhook) {
+  if (!disableWebhook) {
     fastify.route({
       method: 'POST',
       url,
