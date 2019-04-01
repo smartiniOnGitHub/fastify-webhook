@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.4.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.4.0) (unreleased)
+Summary Changelog:
+- Align with latest Fastify v1 (and related plugins)
+- Updated all dependencies
+- Updated Tap tests
+- Update code to use latest ES6/7/8 syntax
+- Improve tests and examples, to read 'secretKey' value from env var SECRET_KEY 
+  or otherwise from a fixed default value
+- Breaking Change: rename plugin option 'disableDefaultWebhook' into 'disableWebhook'
+
 ## [0.3.2](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.3.2) (2019-02-03)
 Summary Changelog:
 - Updated all dependencies
