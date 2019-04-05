@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/1.0.0) (2019-04-05)
+Summary Changelog:
+- Updated all dependencies
+- Note that this release number means that the plugin is stable, 
+  and for Fastify v1
+- Small updates
+
 ## [0.4.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/0.4.0) (2019-04-01)
 Summary Changelog:
 - Align with latest Fastify v1 (and related plugins)
