@@ -1,6 +1,6 @@
 {
   "name": "fastify-webhook",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Fastify Plugin to serve webhooks with some default settings",
   "main": "src/plugin",
   "scripts": {
