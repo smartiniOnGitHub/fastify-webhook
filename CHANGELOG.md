@@ -5,6 +5,9 @@
 Summary Changelog:
 - Update requirements to Fastify v2
 - Update all dependencies
+- Breaking Change: rename plugin option 'beforeHandler' to 'preHandler', 
+  due to a change/rename in Fastify v2
+- Update function arguments like in Fastify v2 (from req to request, etc)
 
 ## [1.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/1.0.0) (2019-04-05)
 Summary Changelog:

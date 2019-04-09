@@ -57,14 +57,14 @@ They are:
 - `acknowledge` (default handler) that simply acknowledge the request, and reply with a simple json response
 - `echo` it dumps the given input data in the (json) response
 - `logger` it dumps some info on the request using Fastify logger
-but of course for a real world usage you need to specify your own handler function, with arguments '(req, reply)'.
-Otherwise you can use yours, with signature `function handler (req, reply)`.
+but of course for a real world usage you need to specify your own handler function, with arguments '(request, reply)'.
+Otherwise you can use yours, with signature `function handler (request, reply)`.
 
 Other plugin options:
 - 'disableWebhook' (default false) to disable the registration of the route for the webhook
 - 'enableGetPlaceholder' (default false) to publish via GET a route with the same path of the webhook but returning an HTTP Error 405 Method Not Allowed
 - 'secretKey' (default null) to specify a string as secret key that callers of the webhook must provide, or webhook will reply with an error
-- 'beforeHandlers' is a list of functions to be used as beforeHandler in the specific route of the webhook; currently the list contains an internal function to check the secret key (if given); otherwise you can define and use yours, with signature `function beforeHandler (req, reply, done)`.
+- 'preHandlers' is a list of functions to be used as preHandler in the specific route of the webhook; currently the list contains an internal function to check the secret key (if given); otherwise you can define and use yours, with signature `function preHandler (request, reply, done)`.
 
 Note that there is not a good general way to handle (usually user-specific) token in requests, so this is not managed via the plugin, but in examples and tests you can find some info.
 
