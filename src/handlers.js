@@ -43,27 +43,27 @@ function _isMimeTypeJSON (req) {
   return true
 }
 
-function acknowledgeWebhookHandler (req, reply) {
+function acknowledgeWebhookHandler (request, reply) {
   // return a simple acknowledge message
   _defaultSuccessWebhookReply(reply)
 }
 
-function loggerWebhookHandler (req, reply) {
+function loggerWebhookHandler (request, reply) {
   // log the given data with Fastify logger, and return a default acknowledge message
-  req.log.info(`Request: MIME Type: "${_getRequestMimeType(req)}", ID: "${req.id}", body: "${req.body}"`)
+  request.log.info(`Request: MIME Type: "${_getRequestMimeType(request)}", ID: "${request.id}", body: "${request.body}"`)
   _defaultSuccessWebhookReply(reply)
 }
 
-function echoWebhookHandler (req, reply) {
+function echoWebhookHandler (request, reply) {
   // return a json dump of given input data
   // note that the given data is also logged with Fastify logger
   // but in this case it's important to provide the content type as json, and content data (empty json is not valid) or and error will be raised
-  if (!_isMimeTypeJSON(req)) {
-    _failureWebhookReply(reply, `Missing or wrong input MIME Type: "${_getRequestMimeType(req)}"`)
+  if (!_isMimeTypeJSON(request)) {
+    _failureWebhookReply(reply, `Missing or wrong input MIME Type: "${_getRequestMimeType(request)}"`)
     return
   }
-  req.log.info(`Request: MIME Type: "${_getRequestMimeType(req)}", ID: "${req.id}", body: "${req.body}"`)
-  reply.type('application/json').send(req.body)
+  request.log.info(`Request: MIME Type: "${_getRequestMimeType(request)}", ID: "${request.id}", body: "${request.body}"`)
+  reply.type('application/json').send(request.body)
 }
 
 module.exports = {
