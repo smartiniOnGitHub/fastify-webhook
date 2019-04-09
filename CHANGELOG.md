@@ -1,6 +1,6 @@
 # Change Log
 
-## [2.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/2.0.0) (unreleased)
+## [2.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/2.0.0) (2019-04-10)
 [Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/1.0.0...2.0.0)
 Summary Changelog:
 - Update requirements to Fastify v2
