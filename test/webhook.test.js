@@ -362,7 +362,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.error(err)
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], defaultReplyType)
-      t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: ' })
+      t.deepEqual(JSON.parse(body), { statusCode: 415, error: 'Unsupported Media Type', message: 'FST_ERR_CTP_INVALID_MEDIA_TYPE: Unsupported Media Type: %s', code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE' })
     })
   })
 })
@@ -395,7 +395,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
       t.error(err)
       t.strictEqual(response.statusCode, 415)
       t.strictEqual(response.headers['content-type'], defaultReplyType)
-      t.deepEqual(JSON.parse(body), { 'statusCode': 415, 'error': 'Unsupported Media Type', 'message': 'Unsupported Media Type: application/unknown' })
+      t.deepEqual(JSON.parse(body), { statusCode: 415, error: 'Unsupported Media Type', message: 'FST_ERR_CTP_INVALID_MEDIA_TYPE: Unsupported Media Type: application/unknown', code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE' })
     })
   })
 })
@@ -426,7 +426,12 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.error(err)
       t.strictEqual(response.statusCode, 400)
       t.strictEqual(response.headers['content-type'], defaultReplyType)
-      t.deepEqual(JSON.parse(body), { statusCode: 400, error: 'Bad Request', message: 'Unexpected end of JSON input' })
+      t.deepEqual(JSON.parse(body), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+        code: 'FST_ERR_CTP_EMPTY_JSON_BODY'
+      })
     })
   })
 })
@@ -667,8 +672,8 @@ function checkSecretKey (request, reply, done) {
   done()
 }
 
-function checkTokenEven (req, reply, done) {
-  const stringToken = req.params.token || ''
+function checkTokenEven (request, reply, done) {
+  const stringToken = request.params.token || ''
   // console.log(`chek token: given "${stringToken}", check if it's even`)
   const numToken = parseInt(stringToken)
   // console.log(`chek token: "${stringToken}" is a number, ${typeof numToken === 'number'}`)
@@ -694,7 +699,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     url: '/custom-webhook/:token',
     handler: webhookHandlers.echo,
     secretKey: secrets.secretKeyGood,
-    beforeHandlers: [checkSecretKey, checkTokenEven]
+    preHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
@@ -730,7 +735,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     url: '/custom-webhook/:token',
     handler: webhookHandlers.echo,
     secretKey: secrets.secretKeyGood,
-    beforeHandlers: [checkSecretKey, checkTokenEven]
+    preHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {
@@ -765,7 +770,7 @@ test('custom options for webhook (using plugin echo handler and input content ty
     url: '/custom-webhook/:token',
     handler: webhookHandlers.echo,
     secretKey: secrets.secretKeyGood,
-    beforeHandlers: [checkSecretKey, checkTokenEven]
+    preHandlers: [checkSecretKey, checkTokenEven]
   })
 
   fastify.listen(0, (err, address) => {

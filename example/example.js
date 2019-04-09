@@ -20,7 +20,7 @@ const fastify = require('fastify')()
 fastify.register(require('../'))
 
 // example to handle a sample home request to serve a static page, optional here
-fastify.get('/', function (req, reply) {
+fastify.get('/', function (request, reply) {
   const path = require('path')
   const scriptRelativeFolder = path.join(__dirname, path.sep)
   const fs = require('fs')

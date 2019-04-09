@@ -35,8 +35,8 @@ function checkSecretKey (request, reply, done) {
   done()
 }
 
-function checkTokenEven (req, reply, done) {
-  const stringToken = req.params.token || ''
+function checkTokenEven (request, reply, done) {
+  const stringToken = request.params.token || ''
   // console.log(`chek token: given "${stringToken}", check if it's even`)
   const numToken = parseInt(stringToken)
   // console.log(`chek token: "${stringToken}" is a number, ${typeof numToken === 'number'}`)
@@ -61,11 +61,11 @@ fastify.register(webhookPlugin, {
   // disableWebhook: false, // same as default
   enableGetPlaceholder: true, // as a sample
   secretKey: webhookSecretKey,
-  beforeHandlers: [checkSecretKey, checkTokenEven]
+  preHandlers: [checkSecretKey, checkTokenEven]
 })
 
 // example to handle a sample home request to serve a static page, optional here
-fastify.get('/', function (req, reply) {
+fastify.get('/', function (request, reply) {
   const path = require('path')
   const scriptRelativeFolder = path.join(__dirname, path.sep)
   const fs = require('fs')

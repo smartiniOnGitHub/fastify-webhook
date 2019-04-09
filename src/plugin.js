@@ -26,7 +26,7 @@ function fastifyWebHook (fastify, options, next) {
     disableWebhook = false,
     enableGetPlaceholder = false,
     secretKey = null,
-    beforeHandlers = [ checkSecretKey ]
+    preHandlers: preHandlers = [ checkSecretKey ]
   } = options
 
   function checkSecretKey (request, reply, done) {
@@ -58,8 +58,8 @@ function fastifyWebHook (fastify, options, next) {
   if (secretKey !== null && typeof secretKey !== 'string') {
     throw new TypeError(`The option secretKey must be a string, instead got a '${typeof secretKey}'`)
   }
-  if (beforeHandlers !== null && !Array.isArray(beforeHandlers)) {
-    throw new TypeError(`The option beforeHandlers must be an array (of functions), instead got a '${typeof beforeHandlers}'`)
+  if (preHandlers !== null && !Array.isArray(preHandlers)) {
+    throw new TypeError(`The option preHandlers must be an array (of functions), instead got a '${typeof preHandlers}'`)
   }
 
   // execute plugin code
@@ -67,7 +67,7 @@ function fastifyWebHook (fastify, options, next) {
     fastify.route({
       method: 'POST',
       url,
-      beforeHandler: beforeHandlers,
+      preHandler: preHandlers,
       handler
     })
     if (enableGetPlaceholder === true) {
