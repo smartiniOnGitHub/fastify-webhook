@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/2.1.0) (2021-04-07)
+[Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/2.0.0...2.1.0)
+Summary Changelog:
+- Update requirements to latest Fastify 2.x, so currently release '^2.15.3'
+- Feature: keep compatibility with Node.js 8 LTS (but this is last release)
+- Update all other dependencies
+- Update Tap to latest (major), and update deprecated calls in tests
+- Add JSDoc to generate documentation from sources
+
 ## [2.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/2.0.0) (2019-04-10)
 [Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/1.0.0...2.0.0)
 Summary Changelog:

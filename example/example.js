@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2018-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,4 +36,10 @@ fastify.listen(3000, '127.0.0.1', (err, address) => {
 fastify.ready(() => {
   const routes = fastify.printRoutes()
   console.log(`Available Routes:\n${routes}`)
+
+  console.log(`To test the webhook, from another terminal, do something like:
+  curl http://127.0.0.1:3000/webhook -X POST -H "Content-Type: application/json" -d '{"payload":"test"}'
+  Or similar commands with wget ...
+  Note that in Windows curl wants to escape json inner string delimiter.
+  `)
 })
