@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/3.0.0) (unreleased)
+[Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/2.1.0...3.0.0)
+Summary Changelog:
+- Update requirements to latest Fastify 3.x and Node.js 10 LTS
+- Ensure all works again
+
 ## [2.1.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/2.1.0) (2021-04-07)
 [Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/2.0.0...2.1.0)
 Summary Changelog:

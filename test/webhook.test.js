@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021 the original author or authors.
+ * Copyright 2018-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 'use strict'
 
-const assert = require('assert')
+const assert = require('assert').strict
 const test = require('tap').test
 const sget = require('simple-get').concat
 const Fastify = require('fastify')
@@ -362,7 +362,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.error(err)
       t.equal(response.statusCode, 415)
       t.equal(response.headers['content-type'], defaultReplyType)
-      t.same(JSON.parse(body), { statusCode: 415, error: 'Unsupported Media Type', message: 'FST_ERR_CTP_INVALID_MEDIA_TYPE: Unsupported Media Type: %s', code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE' })
+      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: %s' })
     })
   })
 })
@@ -395,7 +395,7 @@ test('custom options for webhook (using plugin echo handler with a wrong mime ty
       t.error(err)
       t.equal(response.statusCode, 415)
       t.equal(response.headers['content-type'], defaultReplyType)
-      t.same(JSON.parse(body), { statusCode: 415, error: 'Unsupported Media Type', message: 'FST_ERR_CTP_INVALID_MEDIA_TYPE: Unsupported Media Type: application/unknown', code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE' })
+      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: application/unknown' })
     })
   })
 })
@@ -428,9 +428,9 @@ test('custom options for webhook (using plugin echo handler and input content ty
       t.equal(response.headers['content-type'], defaultReplyType)
       t.same(JSON.parse(body), {
         statusCode: 400,
+        code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
         error: 'Bad Request',
-        message: 'FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to \'application/json\'',
-        code: 'FST_ERR_CTP_EMPTY_JSON_BODY'
+        message: 'Body cannot be empty when content-type is set to \'application/json\''
       })
     })
   })
