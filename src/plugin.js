@@ -33,7 +33,7 @@ function fastifyWebHook (fastify, options, next) {
     if (secretKey) {
       const contentType = request.headers['content-type'] || ''
       const requestSecretKey = (request.body) ? request.body.secretKey : ''
-      if (request.req.method !== 'POST' ||
+      if (request.raw.method !== 'POST' ||
         !contentType.startsWith('application/json') ||
         requestSecretKey !== secretKey) {
         reply.code(403).send(new Error('Missing or wrong secret key'))
