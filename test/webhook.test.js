@@ -362,7 +362,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.error(err)
       t.equal(response.statusCode, 415)
       t.equal(response.headers['content-type'], defaultReplyType)
-      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: %s' })
+      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: undefined' })
       t.end()
     })
   })
