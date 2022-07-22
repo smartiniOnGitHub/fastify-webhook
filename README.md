@@ -3,7 +3,6 @@
   [![NPM Version](https://img.shields.io/npm/v/fastify-webhook.svg?style=flat)](https://npmjs.org/package/fastify-webhook/)
   [![NPM Downloads](https://img.shields.io/npm/dm/fastify-webhook.svg?style=flat)](https://npmjs.org/package/fastify-webhook/)
   [![Code Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
-  [![Coverage Status](https://coveralls.io/repos/github/smartiniOnGitHub/fastify-webhook/badge.svg?branch=master)](https://coveralls.io/github/smartiniOnGitHub/fastify-webhook/?branch=master)
   [![license - APACHE-2.0](https://img.shields.io/npm/l/fastify-webhook.svg)](http://opensource.org/licenses/APACHE-2.0)
 
 Fastify Plugin to serve webhooks with some useful default settings.
@@ -42,9 +41,8 @@ In the [example](./example/) folder there are some simple server scripts that us
 
 ## Requirements
 
-Fastify ^3.3.0 , Node.js 10 LTS (10.13.0) or later.
-
-Note that plugin releases 2.x are for Fastify 2.x, 3.x are for Fastify 3.x, etc.
+Fastify ^4.0.1 , Node.js 14 LTS (14.15.0) or later.
+Note that plugin releases 3.x are for Fastify 3.x, 4.x are for Fastify 4.x, etc.
 
 
 ## Sources

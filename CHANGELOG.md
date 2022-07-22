@@ -1,5 +1,14 @@
 # Change Log
 
+## [4.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/4.0.0) (2022-07-22)
+[Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/3.0.0...4.0.0)
+Summary Changelog:
+- Updated requirements to Fastify '^4.0.0' and Fastify-plugin '^4.0.0'; 
+  update code with related changes
+- Updated all dependencies to latest (for Node.js 14 LTS)
+- Update and simplified example and test code
+- Update documentation from sources with JSDoc
+
 ## [3.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/3.0.0) (2022-03-27)
 [Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/2.1.0...3.0.0)
 Summary Changelog:
