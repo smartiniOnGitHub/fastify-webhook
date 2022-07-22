@@ -81,6 +81,6 @@ function fastifyWebHook (fastify, options, next) {
 }
 
 module.exports = fp(fastifyWebHook, {
-  fastify: '^3.3.0',
+  fastify: '4.x',
   name: 'fastify-webhook'
 })
