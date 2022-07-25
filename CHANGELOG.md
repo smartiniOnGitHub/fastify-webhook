@@ -1,5 +1,10 @@
 # Change Log
 
+## [4.0.1](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/4.0.1) (2022-07-25)
+[Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/4.0.0...4.0.1)
+Summary Changelog:
+- Removed reference to an internal Fastify data structure for the request
+
 ## [4.0.0](https://github.com/smartiniOnGitHub/fastify-webhook/releases/tag/4.0.0) (2022-07-22)
 [Full Changelog](https://github.com/smartiniOnGitHub/fastify-webhook/compare/3.0.0...4.0.0)
 Summary Changelog:
