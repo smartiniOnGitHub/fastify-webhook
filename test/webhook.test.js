@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2023 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -362,7 +362,7 @@ test('custom options for webhook (using plugin echo handler with given but empty
       t.error(err)
       t.equal(response.statusCode, 415)
       t.equal(response.headers['content-type'], defaultReplyType)
-      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: undefined' })
+      t.same(JSON.parse(body), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type: %s' })
       t.end()
     })
   })

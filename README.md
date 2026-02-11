@@ -41,8 +41,8 @@ In the [example](./example/) folder there are some simple server scripts that us
 
 ## Requirements
 
-Fastify ^4.0.1 , Node.js 14 LTS (14.15.0) or later.
-Note that plugin releases 3.x are for Fastify 3.x, 4.x are for Fastify 4.x, etc.
+Fastify ^5.0.0 , Node.js 20 LTS (20.9.0) or later.
+Note that plugin releases 4.x are for Fastify 4.x, 5.x for Fastify 5.x, etc.
 
 
 ## Sources
